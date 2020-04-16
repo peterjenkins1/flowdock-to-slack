@@ -1,0 +1,323 @@
+[
+    {
+        "type": "message",
+        "subtype": "channel_join",
+        "ts": "1585638751.000200",
+        "user": "U010SUQ9G4X",
+        "text": "<@U010SUQ9G4X> has joined the channel"
+    },
+    {
+        "type": "message",
+        "subtype": "bot_message",
+        "text": "",
+        "ts": "1585638752.000300",
+        "username": "ShindoSensei (lead)",
+        "icons": {
+            "image_48": "https:\/\/s3-us-west-2.amazonaws.com\/slack-files2\/bot_icons\/2020-03-31\/1027500873617_48.png"
+        },
+        "bot_id": "B010UCLT8P7",
+        "attachments": [
+            {
+                "callback_id": "25925855161",
+                "fallback": "created a new message",
+                "text": "\noctopods-waba fn7k33k\n",
+                "pretext": "_A conversation started by <https:\/\/app.intercom.com\/a\/apps\/b2cbs92r\/users\/5e575c8cf696bef8586e260e|ShindoSensei (lead)>_ - <https:\/\/app.intercom.com\/a\/apps\/b2cbs92r\/conversations\/25925855161|View in Intercom>",
+                "id": 1,
+                "color": "3AA3E3",
+                "fields": [
+                    {
+                        "title": "Assignee",
+                        "value": "Nobody",
+                        "short": true
+                    },
+                    {
+                        "title": "Status",
+                        "value": "Open",
+                        "short": true
+                    },
+                    {
+                        "title": "Last reply",
+                        "value": "31 Mar 2020 07:11:09AM",
+                        "short": true
+                    }
+                ],
+                "actions": [
+                    {
+                        "id": "1",
+                        "name": "close",
+                        "text": "Close",
+                        "type": "button",
+                        "value": "close",
+                        "style": "danger"
+                    },
+                    {
+                        "id": "2",
+                        "name": "qualify",
+                        "text": "Qualify",
+                        "type": "button",
+                        "value": "qualify",
+                        "style": "default"
+                    }
+                ],
+                "mrkdwn_in": [
+                    "text",
+                    "pretext",
+                    "fallback"
+                ]
+            }
+        ]
+    },
+    {
+        "type": "message",
+        "subtype": "channel_join",
+        "ts": "1585638753.000500",
+        "user": "U010SQNGY3G",
+        "text": "<@U010SQNGY3G> has joined the channel",
+        "inviter": "U010SUQ9G4X"
+    },
+    {
+        "type": "message",
+        "subtype": "bot_message",
+        "text": "",
+        "ts": "1585638753.000700",
+        "username": "ShindoSensei (lead)",
+        "icons": {
+            "image_48": "https:\/\/s3-us-west-2.amazonaws.com\/slack-files2\/bot_icons\/2020-03-31\/1027500873617_48.png"
+        },
+        "bot_id": "B010UCLT8P7",
+        "attachments": [
+            {
+                "callback_id": "25925855161",
+                "fallback": "replied",
+                "text": "\nTest\n",
+                "id": 1,
+                "color": "0073b0",
+                "mrkdwn_in": [
+                    "text",
+                    "pretext",
+                    "fallback"
+                ]
+            }
+        ]
+    },
+    {
+        "type": "message",
+        "subtype": "bot_message",
+        "text": "",
+        "ts": "1585638753.000800",
+        "username": "ShindoSensei (lead)",
+        "icons": {
+            "image_48": "https:\/\/s3-us-west-2.amazonaws.com\/slack-files2\/bot_icons\/2020-03-31\/1027500873617_48.png"
+        },
+        "bot_id": "B010UCLT8P7",
+        "attachments": [
+            {
+                "callback_id": "25925855161",
+                "fallback": "replied",
+                "text": "\nHello this is mr shindo from whatsapp justin testing 123 345\n",
+                "id": 1,
+                "color": "0073b0",
+                "mrkdwn_in": [
+                    "text",
+                    "pretext",
+                    "fallback"
+                ]
+            }
+        ]
+    },
+    {
+        "type": "message",
+        "subtype": "bot_message",
+        "text": "",
+        "ts": "1585638754.000900",
+        "username": "Justin Teo",
+        "icons": {
+            "image_48": "https:\/\/s3-us-west-2.amazonaws.com\/slack-files2\/bot_icons\/2020-03-31\/1027500952321_48.png"
+        },
+        "bot_id": "B010UCLT8P7",
+        "attachments": [
+            {
+                "callback_id": "25925855161",
+                "fallback": "replied",
+                "text": "\nhello this is smartly test sending message to whatsapp do you receive?\n",
+                "id": 1,
+                "color": "ec8b23",
+                "mrkdwn_in": [
+                    "text",
+                    "pretext",
+                    "fallback"
+                ]
+            }
+        ]
+    },
+    {
+        "type": "message",
+        "subtype": "bot_message",
+        "text": "",
+        "ts": "1585638754.001000",
+        "username": "Justin Teo",
+        "icons": {
+            "image_48": "https:\/\/s3-us-west-2.amazonaws.com\/slack-files2\/bot_icons\/2020-03-31\/1027500952321_48.png"
+        },
+        "bot_id": "B010UCLT8P7",
+        "attachments": [
+            {
+                "callback_id": "25925855161",
+                "fallback": "replied",
+                "text": "\ntest\n\n",
+                "id": 1,
+                "color": "ec8b23",
+                "mrkdwn_in": [
+                    "text",
+                    "pretext",
+                    "fallback"
+                ]
+            }
+        ]
+    },
+    {
+        "type": "message",
+        "subtype": "bot_message",
+        "text": "",
+        "ts": "1585638754.001100",
+        "username": "Justin Teo",
+        "icons": {
+            "image_48": "https:\/\/s3-us-west-2.amazonaws.com\/slack-files2\/bot_icons\/2020-03-31\/1027500952321_48.png"
+        },
+        "bot_id": "B010UCLT8P7",
+        "attachments": [
+            {
+                "callback_id": "25925855161",
+                "fallback": "left a note in a conversation",
+                "text": "_Added a note to this <https:\/\/app.intercom.com\/a\/apps\/b2cbs92r\/conversations\/25925855161|conversation>_\n\nThis is an automated message sent by <https:\/\/octopods.io|Octopods.>\n\nYour message has failed to send because more than 24 hours have passed since the customer last replied to this conversation. We will not attempt to re-send this message in the future. You can re-engage with the user by selecting a template from our <https:\/\/intercom.help\/octopods\/en\/articles\/3408122-inbox-app|Inbox App> which should be in your right side bar. You can select any of your approved Message Templates.",
+                "id": 1,
+                "color": "faead8",
+                "mrkdwn_in": [
+                    "text",
+                    "pretext",
+                    "fallback"
+                ]
+            }
+        ]
+    },
+    {
+        "type": "message",
+        "subtype": "bot_message",
+        "text": "",
+        "ts": "1585638754.001200",
+        "username": "Justin Teo",
+        "icons": {
+            "image_48": "https:\/\/s3-us-west-2.amazonaws.com\/slack-files2\/bot_icons\/2020-03-31\/1027500952321_48.png"
+        },
+        "bot_id": "B010UCLT8P7",
+        "attachments": [
+            {
+                "callback_id": "25925855161",
+                "fallback": "left a note in a conversation",
+                "text": "_Added a note to this <https:\/\/app.intercom.com\/a\/apps\/b2cbs92r\/conversations\/25925855161|conversation>_\n\nTesting notes\n",
+                "id": 1,
+                "color": "faead8",
+                "mrkdwn_in": [
+                    "text",
+                    "pretext",
+                    "fallback"
+                ]
+            }
+        ]
+    },
+    {
+        "type": "message",
+        "subtype": "channel_join",
+        "ts": "1585638772.001500",
+        "user": "U010SQNGY3G",
+        "text": "<@U010SQNGY3G> has joined the channel"
+    },
+    {
+        "client_msg_id": "9aa005d8-9ba7-4770-a3bd-bfcc0ed4f7e1",
+        "type": "message",
+        "text": "test",
+        "user": "U010SQNGY3G",
+        "ts": "1585638778.001700",
+        "team": "T010SNN2LSJ",
+        "user_team": "T010SNN2LSJ",
+        "source_team": "T010SNN2LSJ",
+        "user_profile": {
+            "avatar_hash": "5491bc1f5f87",
+            "image_72": "https:\/\/avatars.slack-edge.com\/2020-03-27\/1032259605895_5491bc1f5f876428794f_72.jpg",
+            "first_name": "",
+            "real_name": "Justin",
+            "display_name": "Justin",
+            "team": "T010SNN2LSJ",
+            "name": "justin",
+            "is_restricted": false,
+            "is_ultra_restricted": false
+        },
+        "blocks": [
+            {
+                "type": "rich_text",
+                "block_id": "=cI=",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "text",
+                                "text": "test"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "type": "message",
+        "subtype": "bot_message",
+        "text": "",
+        "ts": "1585638783.001900",
+        "username": "Justin Teo",
+        "icons": {
+            "image_48": "https:\/\/s3-us-west-2.amazonaws.com\/slack-files2\/bot_icons\/2020-03-31\/1027500952321_48.png"
+        },
+        "bot_id": "B010UCLT8P7",
+        "attachments": [
+            {
+                "callback_id": "25925855161",
+                "fallback": "left a note in a conversation",
+                "text": "_Added a note to this <https:\/\/app.intercom.com\/a\/apps\/b2cbs92r\/conversations\/25925855161|conversation>_\n\nThis is an automated message sent by <https:\/\/octopods.io|Octopods.>\n\nYour message has failed to send because more than 24 hours have passed since the customer last replied to this conversation. We will not attempt to re-send this message in the future. You can re-engage with the user by selecting a template from our <https:\/\/intercom.help\/octopods\/en\/articles\/3408122-inbox-app|Inbox App> which should be in your right side bar. You can select any of your approved Message Templates.",
+                "id": 1,
+                "color": "faead8",
+                "mrkdwn_in": [
+                    "text",
+                    "pretext",
+                    "fallback"
+                ]
+            }
+        ]
+    },
+    {
+        "type": "message",
+        "subtype": "bot_message",
+        "text": "",
+        "ts": "1585638802.002000",
+        "username": "Justin Teo",
+        "icons": {
+            "image_48": "https:\/\/s3-us-west-2.amazonaws.com\/slack-files2\/bot_icons\/2020-03-31\/1027500952321_48.png"
+        },
+        "bot_id": "B010UCLT8P7",
+        "attachments": [
+            {
+                "callback_id": "25925855161",
+                "fallback": "left a note in a conversation",
+                "text": "_Added a note to this <https:\/\/app.intercom.com\/a\/apps\/b2cbs92r\/conversations\/25925855161|conversation>_\n\nhello test intercom notes from slack z-shindosensei-1 to intercom\n",
+                "id": 1,
+                "color": "faead8",
+                "mrkdwn_in": [
+                    "text",
+                    "pretext",
+                    "fallback"
+                ]
+            }
+        ]
+    }
+]

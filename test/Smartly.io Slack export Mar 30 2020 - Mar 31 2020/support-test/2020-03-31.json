@@ -1,0 +1,805 @@
+[
+    {
+        "type": "message",
+        "subtype": "bot_message",
+        "text": "",
+        "ts": "1585638613.000100",
+        "username": "ShindoSensei (lead)",
+        "icons": {
+            "image_48": "https:\/\/s3-us-west-2.amazonaws.com\/slack-files2\/bot_icons\/2020-03-31\/1027500873617_48.png"
+        },
+        "bot_id": "B010UCLT8P7",
+        "attachments": [
+            {
+                "callback_id": "25925855161",
+                "fallback": "created a new message",
+                "text": "\noctopods-waba fn7k33k\n",
+                "pretext": "_A conversation started by <https:\/\/app.intercom.com\/a\/apps\/b2cbs92r\/users\/5e575c8cf696bef8586e260e|ShindoSensei (lead)>_ - <https:\/\/app.intercom.com\/a\/apps\/b2cbs92r\/conversations\/25925855161|View in Intercom>",
+                "id": 1,
+                "color": "3AA3E3",
+                "fields": [
+                    {
+                        "title": "Assignee",
+                        "value": "Nobody",
+                        "short": true
+                    },
+                    {
+                        "title": "Status",
+                        "value": "Open",
+                        "short": true
+                    },
+                    {
+                        "title": "Last reply",
+                        "value": "31 Mar 2020 07:12:59AM",
+                        "short": true
+                    }
+                ],
+                "mrkdwn_in": [
+                    "text",
+                    "pretext",
+                    "fallback"
+                ]
+            },
+            {
+                "callback_id": "25925855161",
+                "fallback": "created a new message",
+                "text": "*View conversation in Slack:* <#C01131644KE>",
+                "id": 2,
+                "color": "3AA3E3",
+                "mrkdwn_in": [
+                    "text",
+                    "pretext",
+                    "fallback"
+                ]
+            },
+            {
+                "fallback": "_4 previou",
+                "text": "_4 previous replies_",
+                "id": 3,
+                "color": "0073b0",
+                "mrkdwn_in": [
+                    "text",
+                    "pretext",
+                    "fallback"
+                ]
+            },
+            {
+                "callback_id": "25925855161",
+                "fallback": "replied",
+                "text": "\ntest\n",
+                "id": 4,
+                "color": "ec8b23",
+                "mrkdwn_in": [
+                    "text",
+                    "pretext",
+                    "fallback"
+                ]
+            }
+        ],
+        "edited": {
+            "user": "B010UCLT8P7",
+            "ts": "1585638802.000000"
+        }
+    },
+    {
+        "type": "message",
+        "subtype": "bot_message",
+        "text": "",
+        "ts": "1585638616.000300",
+        "username": "Justin Teo",
+        "icons": {
+            "image_48": "https:\/\/s3-us-west-2.amazonaws.com\/slack-files2\/bot_icons\/2020-03-31\/1027500952321_48.png"
+        },
+        "bot_id": "B010UCLT8P7",
+        "thread_ts": "1585638616.000300",
+        "reply_count": 2,
+        "reply_users_count": 1,
+        "latest_reply": "1585638741.000900",
+        "reply_users": [
+            "U010SQNGY3G"
+        ],
+        "replies": [
+            {
+                "user": "U010SQNGY3G",
+                "ts": "1585638721.000700"
+            },
+            {
+                "user": "U010SQNGY3G",
+                "ts": "1585638741.000900"
+            }
+        ],
+        "subscribed": false,
+        "attachments": [
+            {
+                "callback_id": "25925855161",
+                "fallback": "left a note in a conversation",
+                "text": "_Added a note to a <https:\/\/smartly-io.slack.com\/archives\/C010W7VHU30\/p1585638613000100|conversation> with_ _<https:\/\/app.intercom.com\/a\/apps\/b2cbs92r\/users\/5e575c8cf696bef8586e260e|ShindoSensei>_ - <https:\/\/app.intercom.com\/a\/apps\/b2cbs92r\/conversations\/25925855161|View in Intercom>\n\nThis is an automated message sent by <https:\/\/octopods.io|Octopods.>\n\nYour message has failed to send because more than 24 hours have passed since the customer last replied to this conversation. We will not attempt to re-send this message in the future. You can re-engage with the user by selecting a template from our <https:\/\/intercom.help\/octopods\/en\/articles\/3408122-inbox-app|Inbox App> which should be in your right side bar. You can select any of your approved Message Templates.",
+                "id": 1,
+                "color": "faead8",
+                "mrkdwn_in": [
+                    "text",
+                    "pretext",
+                    "fallback"
+                ]
+            }
+        ]
+    },
+    {
+        "type": "message",
+        "subtype": "bot_message",
+        "text": "",
+        "ts": "1585638671.000500",
+        "username": "Justin Teo",
+        "icons": {
+            "image_48": "https:\/\/s3-us-west-2.amazonaws.com\/slack-files2\/bot_icons\/2020-03-31\/1027500952321_48.png"
+        },
+        "bot_id": "B010UCLT8P7",
+        "attachments": [
+            {
+                "callback_id": "25925855161",
+                "fallback": "left a note in a conversation",
+                "text": "_Added a note to a <https:\/\/smartly-io.slack.com\/archives\/C010W7VHU30\/p1585638613000100|conversation> with_ _<https:\/\/app.intercom.com\/a\/apps\/b2cbs92r\/users\/5e575c8cf696bef8586e260e|ShindoSensei>_ - <https:\/\/app.intercom.com\/a\/apps\/b2cbs92r\/conversations\/25925855161|View in Intercom>\n\nTesting notes\n",
+                "id": 1,
+                "color": "faead8",
+                "mrkdwn_in": [
+                    "text",
+                    "pretext",
+                    "fallback"
+                ]
+            }
+        ]
+    },
+    {
+        "client_msg_id": "3c0332f2-77d5-404d-a70f-e24f08a39b97",
+        "type": "message",
+        "text": "hello testing",
+        "user": "U010SQNGY3G",
+        "ts": "1585638721.000700",
+        "team": "T010SNN2LSJ",
+        "user_team": "T010SNN2LSJ",
+        "source_team": "T010SNN2LSJ",
+        "user_profile": {
+            "avatar_hash": "5491bc1f5f87",
+            "image_72": "https:\/\/avatars.slack-edge.com\/2020-03-27\/1032259605895_5491bc1f5f876428794f_72.jpg",
+            "first_name": "",
+            "real_name": "Justin",
+            "display_name": "Justin",
+            "team": "T010SNN2LSJ",
+            "name": "justin",
+            "is_restricted": false,
+            "is_ultra_restricted": false
+        },
+        "blocks": [
+            {
+                "type": "rich_text",
+                "block_id": "rB4",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "text",
+                                "text": "hello testing"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "thread_ts": "1585638616.000300"
+    },
+    {
+        "client_msg_id": "55671bf8-cc9a-4b42-b9e9-9f4f5896b06e",
+        "type": "message",
+        "text": "<@U010SQNGY3G> test",
+        "user": "U010SQNGY3G",
+        "ts": "1585638741.000900",
+        "team": "T010SNN2LSJ",
+        "user_team": "T010SNN2LSJ",
+        "source_team": "T010SNN2LSJ",
+        "user_profile": {
+            "avatar_hash": "5491bc1f5f87",
+            "image_72": "https:\/\/avatars.slack-edge.com\/2020-03-27\/1032259605895_5491bc1f5f876428794f_72.jpg",
+            "first_name": "",
+            "real_name": "Justin",
+            "display_name": "Justin",
+            "team": "T010SNN2LSJ",
+            "name": "justin",
+            "is_restricted": false,
+            "is_ultra_restricted": false
+        },
+        "blocks": [
+            {
+                "type": "rich_text",
+                "block_id": "NiJZ",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "user",
+                                "user_id": "U010SQNGY3G"
+                            },
+                            {
+                                "type": "text",
+                                "text": " test"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "thread_ts": "1585638616.000300"
+    },
+    {
+        "type": "message",
+        "subtype": "bot_message",
+        "text": "",
+        "ts": "1585638784.001300",
+        "username": "Justin Teo",
+        "icons": {
+            "image_48": "https:\/\/s3-us-west-2.amazonaws.com\/slack-files2\/bot_icons\/2020-03-31\/1027500952321_48.png"
+        },
+        "bot_id": "B010UCLT8P7",
+        "attachments": [
+            {
+                "callback_id": "25925855161",
+                "fallback": "left a note in a conversation",
+                "text": "_Added a note to a <https:\/\/smartly-io.slack.com\/archives\/C010W7VHU30\/p1585638613000100|conversation> with_ _<https:\/\/app.intercom.com\/a\/apps\/b2cbs92r\/users\/5e575c8cf696bef8586e260e|ShindoSensei>_ - <https:\/\/app.intercom.com\/a\/apps\/b2cbs92r\/conversations\/25925855161|View in Intercom>\n\nThis is an automated message sent by <https:\/\/octopods.io|Octopods.>\n\nYour message has failed to send because more than 24 hours have passed since the customer last replied to this conversation. We will not attempt to re-send this message in the future. You can re-engage with the user by selecting a template from our <https:\/\/intercom.help\/octopods\/en\/articles\/3408122-inbox-app|Inbox App> which should be in your right side bar. You can select any of your approved Message Templates.",
+                "id": 1,
+                "color": "faead8",
+                "mrkdwn_in": [
+                    "text",
+                    "pretext",
+                    "fallback"
+                ]
+            }
+        ]
+    },
+    {
+        "type": "message",
+        "subtype": "bot_message",
+        "text": "",
+        "ts": "1585638802.001500",
+        "username": "Justin Teo",
+        "icons": {
+            "image_48": "https:\/\/s3-us-west-2.amazonaws.com\/slack-files2\/bot_icons\/2020-03-31\/1027500952321_48.png"
+        },
+        "bot_id": "B010UCLT8P7",
+        "attachments": [
+            {
+                "callback_id": "25925855161",
+                "fallback": "left a note in a conversation",
+                "text": "_Added a note to a <https:\/\/smartly-io.slack.com\/archives\/C010W7VHU30\/p1585638613000100|conversation> with_ _<https:\/\/app.intercom.com\/a\/apps\/b2cbs92r\/users\/5e575c8cf696bef8586e260e|ShindoSensei>_ - <https:\/\/app.intercom.com\/a\/apps\/b2cbs92r\/conversations\/25925855161|View in Intercom>\n\nhello test intercom notes from slack z-shindosensei-1 to intercom\n",
+                "id": 1,
+                "color": "faead8",
+                "mrkdwn_in": [
+                    "text",
+                    "pretext",
+                    "fallback"
+                ]
+            }
+        ]
+    },
+    {
+        "type": "message",
+        "subtype": "bot_message",
+        "text": "",
+        "ts": "1585638912.001700",
+        "username": "Jane Doe (user)",
+        "bot_id": "B010UCLT8P7",
+        "thread_ts": "1585638912.001700",
+        "reply_count": 1,
+        "reply_users_count": 1,
+        "latest_reply": "1585638983.002100",
+        "reply_users": [
+            "U010SQNGY3G"
+        ],
+        "replies": [
+            {
+                "user": "U010SQNGY3G",
+                "ts": "1585638983.002100"
+            }
+        ],
+        "subscribed": false,
+        "attachments": [
+            {
+                "callback_id": "25924917977",
+                "fallback": "created a new message",
+                "text": "\ntest\n",
+                "pretext": "_A conversation started by <https:\/\/app.intercom.com\/a\/apps\/b2cbs92r\/users\/5e5729d898407000b0ae4e8f|Jane Doe (user)>_ - <https:\/\/app.intercom.com\/a\/apps\/b2cbs92r\/conversations\/25924917977|View in Intercom>",
+                "id": 1,
+                "color": "3AA3E3",
+                "fields": [
+                    {
+                        "title": "Assignee",
+                        "value": "Nobody",
+                        "short": true
+                    },
+                    {
+                        "title": "Status",
+                        "value": "Open",
+                        "short": true
+                    },
+                    {
+                        "title": "Last reply",
+                        "value": "31 Mar 2020 07:15:08AM",
+                        "short": true
+                    },
+                    {
+                        "title": "Email",
+                        "value": "<mailto:jane.doe@example.com|jane.doe@example.com>",
+                        "short": true
+                    }
+                ],
+                "mrkdwn_in": [
+                    "text",
+                    "pretext",
+                    "fallback"
+                ]
+            },
+            {
+                "callback_id": "25924917977",
+                "fallback": "created a new message",
+                "text": "*View conversation in Slack:* <#C010QNQEB4J>",
+                "id": 2,
+                "color": "3AA3E3",
+                "mrkdwn_in": [
+                    "text",
+                    "pretext",
+                    "fallback"
+                ]
+            },
+            {
+                "fallback": "_1 previou",
+                "text": "_1 previous reply_",
+                "id": 3,
+                "color": "0073b0",
+                "mrkdwn_in": [
+                    "text",
+                    "pretext",
+                    "fallback"
+                ]
+            },
+            {
+                "callback_id": "25924917977",
+                "fallback": "replied",
+                "text": "\n_This message was deleted_\n",
+                "id": 4,
+                "color": "ec8b23",
+                "mrkdwn_in": [
+                    "text",
+                    "pretext",
+                    "fallback"
+                ]
+            },
+            {
+                "callback_id": "25924917977",
+                "fallback": "replied",
+                "text": "\nTesting Intercom to Slack support-test\n",
+                "id": 5,
+                "color": "ec8b23",
+                "mrkdwn_in": [
+                    "text",
+                    "pretext",
+                    "fallback"
+                ]
+            }
+        ],
+        "edited": {
+            "user": "B010UCLT8P7",
+            "ts": "1585639168.000000"
+        }
+    },
+    {
+        "type": "message",
+        "subtype": "bot_message",
+        "text": "",
+        "ts": "1585638949.001900",
+        "username": "Justin Teo",
+        "icons": {
+            "image_48": "https:\/\/s3-us-west-2.amazonaws.com\/slack-files2\/bot_icons\/2020-03-31\/1027500952321_48.png"
+        },
+        "bot_id": "B010UCLT8P7",
+        "attachments": [
+            {
+                "callback_id": "25924917977",
+                "fallback": "left a note in a conversation",
+                "text": "_Added a note to a <https:\/\/smartly-io.slack.com\/archives\/C010W7VHU30\/p1585638912001700|conversation> with_ _<https:\/\/app.intercom.com\/a\/apps\/b2cbs92r\/users\/5e5729d898407000b0ae4e8f|Jane Doe>_ - <https:\/\/app.intercom.com\/a\/apps\/b2cbs92r\/conversations\/25924917977|View in Intercom>\n\n<https:\/\/app.intercom.io\/apps\/b2cbs92r\/admin\/3119247|Justin Teo> hello there testing intercom to slack\n",
+                "id": 1,
+                "color": "faead8",
+                "mrkdwn_in": [
+                    "text",
+                    "pretext",
+                    "fallback"
+                ]
+            }
+        ]
+    },
+    {
+        "client_msg_id": "951b9f5c-dd1c-4dea-b602-27c2a16166d9",
+        "type": "message",
+        "text": "test",
+        "user": "U010SQNGY3G",
+        "ts": "1585638983.002100",
+        "team": "T010SNN2LSJ",
+        "user_team": "T010SNN2LSJ",
+        "source_team": "T010SNN2LSJ",
+        "user_profile": {
+            "avatar_hash": "5491bc1f5f87",
+            "image_72": "https:\/\/avatars.slack-edge.com\/2020-03-27\/1032259605895_5491bc1f5f876428794f_72.jpg",
+            "first_name": "",
+            "real_name": "Justin",
+            "display_name": "Justin",
+            "team": "T010SNN2LSJ",
+            "name": "justin",
+            "is_restricted": false,
+            "is_ultra_restricted": false
+        },
+        "blocks": [
+            {
+                "type": "rich_text",
+                "block_id": "jpyA",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "text",
+                                "text": "test"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "thread_ts": "1585638912.001700"
+    },
+    {
+        "type": "message",
+        "subtype": "bot_message",
+        "text": "",
+        "ts": "1585639167.002400",
+        "username": "Justin Teo",
+        "icons": {
+            "image_48": "https:\/\/s3-us-west-2.amazonaws.com\/slack-files2\/bot_icons\/2020-03-31\/1027500952321_48.png"
+        },
+        "bot_id": "B010UCLT8P7",
+        "attachments": [
+            {
+                "callback_id": "25924917977",
+                "fallback": "left a note in a conversation",
+                "text": "_Added a note to a <https:\/\/smartly-io.slack.com\/archives\/C010W7VHU30\/p1585638912001700|conversation> with_ _<https:\/\/app.intercom.com\/a\/apps\/b2cbs92r\/users\/5e5729d898407000b0ae4e8f|Jane Doe>_ - <https:\/\/app.intercom.com\/a\/apps\/b2cbs92r\/conversations\/25924917977|View in Intercom>\n\n<https:\/\/app.intercom.com\/a\/apps\/b2cbs92r\/admin\/3119247|Justin Teo> you there\n",
+                "id": 1,
+                "color": "faead8",
+                "mrkdwn_in": [
+                    "text",
+                    "pretext",
+                    "fallback"
+                ]
+            }
+        ]
+    },
+    {
+        "client_msg_id": "2493ac1d-f1f9-4624-9a07-6fa36a6b088b",
+        "type": "message",
+        "text": "hmmm, where are the threads? :wink:",
+        "user": "U010F2VJ92M",
+        "ts": "1585639198.002900",
+        "team": "T010SNN2LSJ",
+        "user_team": "T010SNN2LSJ",
+        "source_team": "T010SNN2LSJ",
+        "user_profile": {
+            "avatar_hash": "a21d1e1a989b",
+            "image_72": "https:\/\/avatars.slack-edge.com\/2020-03-26\/1027867614964_a21d1e1a989b79b68ab3_72.png",
+            "first_name": "Peter",
+            "real_name": "Peter Jenkins",
+            "display_name": "Peter",
+            "team": "T010SNN2LSJ",
+            "name": "peter.jenkins",
+            "is_restricted": false,
+            "is_ultra_restricted": false
+        },
+        "blocks": [
+            {
+                "type": "rich_text",
+                "block_id": "nmBHv",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "text",
+                                "text": "hmmm, where are the threads? "
+                            },
+                            {
+                                "type": "emoji",
+                                "name": "wink"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "thread_ts": "1585639198.002900",
+        "reply_count": 6,
+        "reply_users_count": 2,
+        "latest_reply": "1585639850.004200",
+        "reply_users": [
+            "U010SQNGY3G",
+            "U010F2VJ92M"
+        ],
+        "replies": [
+            {
+                "user": "U010SQNGY3G",
+                "ts": "1585639210.003200"
+            },
+            {
+                "user": "U010F2VJ92M",
+                "ts": "1585639231.003400"
+            },
+            {
+                "user": "U010SQNGY3G",
+                "ts": "1585639249.003600"
+            },
+            {
+                "user": "U010SQNGY3G",
+                "ts": "1585639256.003800"
+            },
+            {
+                "user": "U010F2VJ92M",
+                "ts": "1585639536.004000"
+            },
+            {
+                "user": "U010F2VJ92M",
+                "ts": "1585639850.004200"
+            }
+        ],
+        "subscribed": true,
+        "last_read": "1585639850.004200"
+    },
+    {
+        "client_msg_id": "ceed5968-f4fc-4fe3-86df-d045a244d239",
+        "type": "message",
+        "text": "very strange behaviour.. i just started testing.",
+        "user": "U010SQNGY3G",
+        "ts": "1585639210.003200",
+        "team": "T010SNN2LSJ",
+        "user_team": "T010SNN2LSJ",
+        "source_team": "T010SNN2LSJ",
+        "user_profile": {
+            "avatar_hash": "5491bc1f5f87",
+            "image_72": "https:\/\/avatars.slack-edge.com\/2020-03-27\/1032259605895_5491bc1f5f876428794f_72.jpg",
+            "first_name": "",
+            "real_name": "Justin",
+            "display_name": "Justin",
+            "team": "T010SNN2LSJ",
+            "name": "justin",
+            "is_restricted": false,
+            "is_ultra_restricted": false
+        },
+        "blocks": [
+            {
+                "type": "rich_text",
+                "block_id": "Rp\/wj",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "text",
+                                "text": "very strange behaviour.. i just started testing."
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "thread_ts": "1585639198.002900",
+        "parent_user_id": "U010F2VJ92M"
+    },
+    {
+        "client_msg_id": "2be631e9-69e3-4d9a-976b-14ac33e2dfb7",
+        "type": "message",
+        "text": "have fun!",
+        "user": "U010F2VJ92M",
+        "ts": "1585639231.003400",
+        "team": "T010SNN2LSJ",
+        "user_team": "T010SNN2LSJ",
+        "source_team": "T010SNN2LSJ",
+        "user_profile": {
+            "avatar_hash": "a21d1e1a989b",
+            "image_72": "https:\/\/avatars.slack-edge.com\/2020-03-26\/1027867614964_a21d1e1a989b79b68ab3_72.png",
+            "first_name": "Peter",
+            "real_name": "Peter Jenkins",
+            "display_name": "Peter",
+            "team": "T010SNN2LSJ",
+            "name": "peter.jenkins",
+            "is_restricted": false,
+            "is_ultra_restricted": false
+        },
+        "blocks": [
+            {
+                "type": "rich_text",
+                "block_id": "llesd",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "text",
+                                "text": "have fun!"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "thread_ts": "1585639198.002900",
+        "parent_user_id": "U010F2VJ92M"
+    },
+    {
+        "client_msg_id": "71f5b835-8aa8-45cc-9a99-59db35d2e3f8",
+        "type": "message",
+        "text": "<@U010F2VJ92M> It seems, when you type in intercom, it creates a thread above, and to reply to that thread from slack, you need to click a button called “Reply to channel” and it takes me to a strange other channel to talk there",
+        "user": "U010SQNGY3G",
+        "ts": "1585639249.003600",
+        "team": "T010SNN2LSJ",
+        "user_team": "T010SNN2LSJ",
+        "source_team": "T010SNN2LSJ",
+        "user_profile": {
+            "avatar_hash": "5491bc1f5f87",
+            "image_72": "https:\/\/avatars.slack-edge.com\/2020-03-27\/1032259605895_5491bc1f5f876428794f_72.jpg",
+            "first_name": "",
+            "real_name": "Justin",
+            "display_name": "Justin",
+            "team": "T010SNN2LSJ",
+            "name": "justin",
+            "is_restricted": false,
+            "is_ultra_restricted": false
+        },
+        "blocks": [
+            {
+                "type": "rich_text",
+                "block_id": "ixu",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "user",
+                                "user_id": "U010F2VJ92M"
+                            },
+                            {
+                                "type": "text",
+                                "text": " It seems, when you type in intercom, it creates a thread above, and to reply to that thread from slack, you need to click a button called “Reply to channel” and it takes me to a strange other channel to talk there"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "thread_ts": "1585639198.002900",
+        "parent_user_id": "U010F2VJ92M"
+    },
+    {
+        "client_msg_id": "975b7aef-a31a-4f49-89c8-e2c6849bfcb0",
+        "type": "message",
+        "text": ":joy:",
+        "user": "U010SQNGY3G",
+        "ts": "1585639256.003800",
+        "team": "T010SNN2LSJ",
+        "user_team": "T010SNN2LSJ",
+        "source_team": "T010SNN2LSJ",
+        "user_profile": {
+            "avatar_hash": "5491bc1f5f87",
+            "image_72": "https:\/\/avatars.slack-edge.com\/2020-03-27\/1032259605895_5491bc1f5f876428794f_72.jpg",
+            "first_name": "",
+            "real_name": "Justin",
+            "display_name": "Justin",
+            "team": "T010SNN2LSJ",
+            "name": "justin",
+            "is_restricted": false,
+            "is_ultra_restricted": false
+        },
+        "blocks": [
+            {
+                "type": "rich_text",
+                "block_id": "7JXPz",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "emoji",
+                                "name": "joy"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "thread_ts": "1585639198.002900",
+        "parent_user_id": "U010F2VJ92M"
+    },
+    {
+        "client_msg_id": "bb2e8e9d-3711-40ba-aaba-7d6dcb6695ce",
+        "type": "message",
+        "text": "sounds hopeless",
+        "user": "U010F2VJ92M",
+        "ts": "1585639536.004000",
+        "team": "T010SNN2LSJ",
+        "user_team": "T010SNN2LSJ",
+        "source_team": "T010SNN2LSJ",
+        "user_profile": {
+            "avatar_hash": "a21d1e1a989b",
+            "image_72": "https:\/\/avatars.slack-edge.com\/2020-03-26\/1027867614964_a21d1e1a989b79b68ab3_72.png",
+            "first_name": "Peter",
+            "real_name": "Peter Jenkins",
+            "display_name": "Peter",
+            "team": "T010SNN2LSJ",
+            "name": "peter.jenkins",
+            "is_restricted": false,
+            "is_ultra_restricted": false
+        },
+        "blocks": [
+            {
+                "type": "rich_text",
+                "block_id": "gj=",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "text",
+                                "text": "sounds hopeless"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "thread_ts": "1585639198.002900",
+        "parent_user_id": "U010F2VJ92M"
+    },
+    {
+        "client_msg_id": "fd6607ae-081b-4298-84a1-4d19c1a3ad63",
+        "type": "message",
+        "text": "the workflow builder stuff in slack looks really nice",
+        "user": "U010F2VJ92M",
+        "ts": "1585639850.004200",
+        "team": "T010SNN2LSJ",
+        "user_team": "T010SNN2LSJ",
+        "source_team": "T010SNN2LSJ",
+        "user_profile": {
+            "avatar_hash": "a21d1e1a989b",
+            "image_72": "https:\/\/avatars.slack-edge.com\/2020-03-26\/1027867614964_a21d1e1a989b79b68ab3_72.png",
+            "first_name": "Peter",
+            "real_name": "Peter Jenkins",
+            "display_name": "Peter",
+            "team": "T010SNN2LSJ",
+            "name": "peter.jenkins",
+            "is_restricted": false,
+            "is_ultra_restricted": false
+        },
+        "blocks": [
+            {
+                "type": "rich_text",
+                "block_id": "zUpSz",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "text",
+                                "text": "the workflow builder stuff in slack looks really nice"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "thread_ts": "1585639198.002900",
+        "parent_user_id": "U010F2VJ92M"
+    }
+]

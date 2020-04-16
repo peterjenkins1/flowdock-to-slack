@@ -1,0 +1,88 @@
+[
+{
+    "user_id": "U010F2VJ92M",
+    "user_name": "peter.jenkins",
+    "date": "1585302182",
+    "change_type": "added",
+    "app_type": "Jira Cloud",
+    "app_id": "A2RPP3NFR",
+    "scope": "identify,bot,commands,channels:read,groups:read,im:read,mpim:read,channels:write,groups:write,links:read,links:write"
+},
+{
+    "user_id": "U010F2VJ92M",
+    "user_name": "peter.jenkins",
+    "date": "1585235771",
+    "change_type": "added",
+    "app_type": "Google Drive",
+    "app_id": "A6NL8MJ6Q",
+    "scope": "identify,bot,channels:read,files:read,team:read,users:read,users:read.email,chat:write:bot,links:read"
+},
+{
+    "user_id": "U010F2VJ92M",
+    "user_name": "peter.jenkins",
+    "date": "1585235682",
+    "change_type": "added",
+    "service_id": 1030386702982,
+    "service_type": "Google Drive",
+    "scope": "files:write:user"
+},
+{
+    "user_id": 0,
+    "user_name": "slack",
+    "date": "1585235610",
+    "change_type": "default_calls_app_changed"
+},
+{
+    "user_id": "U010SUQ9G4X",
+    "user_name": "marcm",
+    "date": "1585235232",
+    "change_type": "added",
+    "app_type": "Intercom",
+    "app_id": "A40CLA0DP",
+    "scope": "identify,bot,commands,channels:history,channels:read,files:read,team:read,users:read,channels:write,chat:write:user,chat:write:bot,files:write:user,users:write"
+},
+{
+    "user_id": 0,
+    "user_name": "slack",
+    "date": "1585234139",
+    "change_type": "default_calls_app_changed",
+    "app_type": "Google+ Hangouts",
+    "app_id": "A0F7YS351"
+},
+{
+    "user_id": "U010SUQ9G4X",
+    "user_name": "marcm",
+    "date": "1585233174",
+    "change_type": "updated",
+    "service_id": 1015845733554,
+    "service_type": "Google+ Hangouts",
+    "scope": "commands"
+},
+{
+    "user_id": "U010SUQ9G4X",
+    "user_name": "marcm",
+    "date": "1585233168",
+    "change_type": "added",
+    "service_id": 1015845733554,
+    "service_type": "Google+ Hangouts",
+    "scope": "commands"
+},
+{
+    "user_id": "U010F2VJ92M",
+    "user_name": "peter.jenkins",
+    "date": "1585226584",
+    "change_type": "added",
+    "app_type": "Google Calendar",
+    "app_id": "ADZ494LHY",
+    "scope": "identify,bot,commands,users.profile:write"
+},
+{
+    "user_id": "U010R55ELRE",
+    "user_name": "andrei",
+    "date": "1585224856",
+    "change_type": "added",
+    "service_id": 1015445949474,
+    "service_type": "Hubot",
+    "scope": "bot"
+}
+]

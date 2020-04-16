@@ -1,0 +1,94 @@
+[
+    {
+        "client_msg_id": "d753932e-5ca5-48e1-8469-4a54bc837cdd",
+        "type": "message",
+        "text": "test",
+        "user": "U010SQNGY3G",
+        "ts": "1585637388.000200",
+        "team": "T010SNN2LSJ",
+        "user_team": "T010SNN2LSJ",
+        "source_team": "T010SNN2LSJ",
+        "user_profile": {
+            "avatar_hash": "5491bc1f5f87",
+            "image_72": "https:\/\/avatars.slack-edge.com\/2020-03-27\/1032259605895_5491bc1f5f876428794f_72.jpg",
+            "first_name": "",
+            "real_name": "Justin",
+            "display_name": "Justin",
+            "team": "T010SNN2LSJ",
+            "name": "justin",
+            "is_restricted": false,
+            "is_ultra_restricted": false
+        },
+        "blocks": [
+            {
+                "type": "rich_text",
+                "block_id": "2xqk",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "text",
+                                "text": "test"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "thread_ts": "1585637388.000200",
+        "reply_count": 1,
+        "reply_users_count": 1,
+        "latest_reply": "1585637402.000300",
+        "reply_users": [
+            "U010SQNGY3G"
+        ],
+        "replies": [
+            {
+                "user": "U010SQNGY3G",
+                "ts": "1585637402.000300"
+            }
+        ],
+        "subscribed": false
+    },
+    {
+        "client_msg_id": "cc7f3051-1c51-428a-ac86-73cb5edae3da",
+        "type": "message",
+        "text": "test reply to my test",
+        "user": "U010SQNGY3G",
+        "ts": "1585637402.000300",
+        "team": "T010SNN2LSJ",
+        "user_team": "T010SNN2LSJ",
+        "source_team": "T010SNN2LSJ",
+        "user_profile": {
+            "avatar_hash": "5491bc1f5f87",
+            "image_72": "https:\/\/avatars.slack-edge.com\/2020-03-27\/1032259605895_5491bc1f5f876428794f_72.jpg",
+            "first_name": "",
+            "real_name": "Justin",
+            "display_name": "Justin",
+            "team": "T010SNN2LSJ",
+            "name": "justin",
+            "is_restricted": false,
+            "is_ultra_restricted": false
+        },
+        "blocks": [
+            {
+                "type": "rich_text",
+                "block_id": "A5Lq9",
+                "elements": [
+                    {
+                        "type": "rich_text_section",
+                        "elements": [
+                            {
+                                "type": "text",
+                                "text": "test reply to my test"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "thread_ts": "1585637388.000200",
+        "parent_user_id": "U010SQNGY3G"
+    }
+]

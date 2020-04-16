@@ -1,0 +1,227 @@
+[
+    {
+        "type": "message",
+        "subtype": "channel_join",
+        "ts": "1585639142.000200",
+        "user": "U010SUQ9G4X",
+        "text": "<@U010SUQ9G4X> has joined the channel"
+    },
+    {
+        "type": "message",
+        "subtype": "bot_message",
+        "text": "",
+        "ts": "1585639142.000300",
+        "username": "Jane Doe (user)",
+        "bot_id": "B010UCLT8P7",
+        "attachments": [
+            {
+                "callback_id": "25924917977",
+                "fallback": "created a new message",
+                "text": "\ntest\n",
+                "pretext": "_A conversation started by <https:\/\/app.intercom.com\/a\/apps\/b2cbs92r\/users\/5e5729d898407000b0ae4e8f|Jane Doe (user)>_ - <https:\/\/app.intercom.com\/a\/apps\/b2cbs92r\/conversations\/25924917977|View in Intercom>",
+                "id": 1,
+                "color": "3AA3E3",
+                "fields": [
+                    {
+                        "title": "Assignee",
+                        "value": "Nobody",
+                        "short": true
+                    },
+                    {
+                        "title": "Status",
+                        "value": "Open",
+                        "short": true
+                    },
+                    {
+                        "title": "Last reply",
+                        "value": "31 Mar 2020 07:15:46AM",
+                        "short": true
+                    },
+                    {
+                        "title": "Email",
+                        "value": "<mailto:jane.doe@example.com|jane.doe@example.com>",
+                        "short": true
+                    }
+                ],
+                "actions": [
+                    {
+                        "id": "1",
+                        "name": "close",
+                        "text": "Close",
+                        "type": "button",
+                        "value": "close",
+                        "style": "danger"
+                    },
+                    {
+                        "id": "2",
+                        "name": "qualify",
+                        "text": "Qualify",
+                        "type": "button",
+                        "value": "qualify",
+                        "style": "default"
+                    }
+                ],
+                "mrkdwn_in": [
+                    "text",
+                    "pretext",
+                    "fallback"
+                ]
+            }
+        ]
+    },
+    {
+        "type": "message",
+        "subtype": "channel_join",
+        "ts": "1585639144.000500",
+        "user": "U010SQNGY3G",
+        "text": "<@U010SQNGY3G> has joined the channel",
+        "inviter": "U010SUQ9G4X"
+    },
+    {
+        "type": "message",
+        "subtype": "bot_message",
+        "text": "",
+        "ts": "1585639145.000700",
+        "username": "Pekka Rihtniemi",
+        "icons": {
+            "image_48": "https:\/\/s3-us-west-2.amazonaws.com\/slack-files2\/bot_icons\/2020-03-31\/1037486275285_48.png"
+        },
+        "bot_id": "B010UCLT8P7",
+        "attachments": [
+            {
+                "callback_id": "25924917977",
+                "fallback": "replied",
+                "text": "\n_This message was deleted_\n",
+                "id": 1,
+                "color": "ec8b23",
+                "mrkdwn_in": [
+                    "text",
+                    "pretext",
+                    "fallback"
+                ]
+            }
+        ]
+    },
+    {
+        "type": "message",
+        "subtype": "bot_message",
+        "text": "",
+        "ts": "1585639146.000800",
+        "username": "Pekka Rihtniemi",
+        "icons": {
+            "image_48": "https:\/\/s3-us-west-2.amazonaws.com\/slack-files2\/bot_icons\/2020-03-31\/1037486275285_48.png"
+        },
+        "bot_id": "B010UCLT8P7",
+        "attachments": [
+            {
+                "callback_id": "25924917977",
+                "fallback": "replied",
+                "text": "\n_This message was deleted_\n",
+                "id": 1,
+                "color": "ec8b23",
+                "mrkdwn_in": [
+                    "text",
+                    "pretext",
+                    "fallback"
+                ]
+            }
+        ]
+    },
+    {
+        "type": "message",
+        "subtype": "bot_message",
+        "text": "",
+        "ts": "1585639146.000900",
+        "username": "Intercom",
+        "bot_id": "B010UCLT8P7",
+        "attachments": [
+            {
+                "callback_id": "25924917977",
+                "fallback": "conversation unassigned",
+                "text": "<https:\/\/app.intercom.com\/a\/apps\/b2cbs92r\/admins\/3814632|Ming Yi Tang> unassigned this <https:\/\/app.intercom.com\/a\/apps\/b2cbs92r\/conversations\/25924917977|conversation>\n\ntest\n",
+                "id": 1,
+                "color": "ffc833",
+                "mrkdwn_in": [
+                    "text",
+                    "pretext",
+                    "fallback"
+                ]
+            }
+        ]
+    },
+    {
+        "type": "message",
+        "subtype": "bot_message",
+        "text": "",
+        "ts": "1585639146.001000",
+        "username": "Justin Teo",
+        "icons": {
+            "image_48": "https:\/\/s3-us-west-2.amazonaws.com\/slack-files2\/bot_icons\/2020-03-31\/1027500952321_48.png"
+        },
+        "bot_id": "B010UCLT8P7",
+        "attachments": [
+            {
+                "callback_id": "25924917977",
+                "fallback": "replied",
+                "text": "\nTesting Intercom to Slack support-test\n",
+                "id": 1,
+                "color": "ec8b23",
+                "mrkdwn_in": [
+                    "text",
+                    "pretext",
+                    "fallback"
+                ]
+            }
+        ]
+    },
+    {
+        "type": "message",
+        "subtype": "bot_message",
+        "text": "",
+        "ts": "1585639146.001100",
+        "username": "Justin Teo",
+        "icons": {
+            "image_48": "https:\/\/s3-us-west-2.amazonaws.com\/slack-files2\/bot_icons\/2020-03-31\/1027500952321_48.png"
+        },
+        "bot_id": "B010UCLT8P7",
+        "attachments": [
+            {
+                "callback_id": "25924917977",
+                "fallback": "left a note in a conversation",
+                "text": "_Added a note to this <https:\/\/app.intercom.com\/a\/apps\/b2cbs92r\/conversations\/25924917977|conversation>_\n\n<https:\/\/app.intercom.io\/apps\/b2cbs92r\/admin\/3119247|Justin Teo> hello there testing intercom to slack\n",
+                "id": 1,
+                "color": "faead8",
+                "mrkdwn_in": [
+                    "text",
+                    "pretext",
+                    "fallback"
+                ]
+            }
+        ]
+    },
+    {
+        "type": "message",
+        "subtype": "bot_message",
+        "text": "",
+        "ts": "1585639167.001200",
+        "username": "Justin Teo",
+        "icons": {
+            "image_48": "https:\/\/s3-us-west-2.amazonaws.com\/slack-files2\/bot_icons\/2020-03-31\/1027500952321_48.png"
+        },
+        "bot_id": "B010UCLT8P7",
+        "attachments": [
+            {
+                "callback_id": "25924917977",
+                "fallback": "left a note in a conversation",
+                "text": "_Added a note to this <https:\/\/app.intercom.com\/a\/apps\/b2cbs92r\/conversations\/25924917977|conversation>_\n\n<https:\/\/app.intercom.com\/a\/apps\/b2cbs92r\/admin\/3119247|Justin Teo> you there\n",
+                "id": 1,
+                "color": "faead8",
+                "mrkdwn_in": [
+                    "text",
+                    "pretext",
+                    "fallback"
+                ]
+            }
+        ]
+    }
+]
