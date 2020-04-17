@@ -20,24 +20,17 @@ def load_json_file(path):
     with open(path) as f:
         return json.load(f)
 
-def map_fd_uid_to_slack_uid(fd_uid):
-    """
-    This is going to be quite slow if we do a lot of lookups. We could pre-process all
-    the ID pairs into a simple dict. That would also help find issues.
-    """
-    email = ""
-    for user in flowdock_users:
-        if str(user['id']) == fd_uid:
-            email = user['email']
-            break
-    else:
-        return None
-    for user in slack_users:
-        if user['profile'].get('email') == email:
-            return user['id']
-        else:
-            continue
-    return None
+def build_fd_to_slack_uid_map():
+    fd_to_slack_uid_map = {} # dict where key is a flowdock uid and value is a slack uid
+    # Should probably sort both lists of users by email address
+    for fd_user in flowdock_users:
+        for slack_user in slack_users:
+            if slack_user['profile'].get('email') == fd_user['email']:
+                fd_to_slack_uid_map[str(fd_user['id'])] = slack_user['id']
+                #slack_users.remove(slack_user)
+                #flowdock_users.remove(fd_user)
+    return fd_to_slack_uid_map
+ 
 # flowdock_users = get_flowdock_users()
 # Temp file with users cached to avoid lots of requests
 users_file = 'test/users.json'
@@ -49,11 +42,13 @@ flowdock_messages = load_json_file(flowdock_messages_file)
 slack_users_file = 'test/Smartly.io Slack export Mar 30 2020 - Mar 31 2020/users.json'
 slack_users = load_json_file(slack_users_file)
 
+fd_to_slack_uid_map = build_fd_to_slack_uid_map() 
+
 slack_messages = []
 
 for fm in flowdock_messages:
     sm = {}
     sm['type'] = fm['event']
     sm['text'] = fm['content']
-    sm['user'] = map_fd_uid_to_slack_uid(fm['user'])
+    sm['user'] = fd_to_slack_uid_map.get(fm['user'])
     slack_messages.append(sm)
