@@ -2,10 +2,13 @@ import json
 import os
 import requests
 from time import gmtime, strftime
+from zipfile import ZipFile
+import shutil
 
 flowdock_token = os.environ.get('FLOWDOCK_TOKEN')
+slack_team = os.environ.get('SLACK_TEAM')
+flowdock_org = os.environ.get('FLOWDOCK_ORG')
 flowdock_url = 'https://api.flowdock.com'
-flowdock_org = 'smartly'
 output_path = 'output'
 output_dir_prefix = output_path + '/slack-export-'
 
@@ -53,6 +56,14 @@ def transform_fd_messages_to_slack():
         sm['type'] = fm['event']
         sm['text'] = fm['content']
         sm['user'] = fd_to_slack_uid_map.get(fm['user'])
+        sm['client_msg_id'] = '' # "3c0332f2-77d5-404d-a70f-e24f08a39b97"
+        sm['ts'] = '%s.000000' % fm['sent']
+        sm['thread_ts'] = sm['ts']
+        sm['team'] = slack_team
+        sm['user_team'] = slack_team
+        sm['source_team'] = slack_team
+        sm['user_profile'] = {} # Display name, avatar etc
+        sm['blocks'] = [] # for formatting
         slack_messages.append(sm)
     return slack_messages
 
@@ -89,6 +100,13 @@ def write_output():
     output_dir = output_dir_prefix + strftime('%Y-%m-%d-%H-%M-%S', gmtime())
     os.mkdir(output_dir)
 
+    # copy the users.json from our test data
+    # we can get the current list from the Slack API if needed
+    shutil.copy(
+        'test/Smartly.io Slack export Mar 30 2020 - Mar 31 2020/users.json',
+        output_dir + '/users.json'
+    )
+
     write_json_file(generate_channels_list(), output_dir, 'channels.json')
 
     # write users.json? If we use existing users this might not be needed
@@ -102,8 +120,12 @@ def write_output():
         write_json_file(slack_messages, channel_dir, 'messages.json')
 
     # zip everything up
+    shutil.make_archive(
+        base_name=output_path + '/latest',
+        format='zip',
+        root_dir=output_dir
+    )
 
 fd_to_slack_uid_map = build_fd_to_slack_uid_map()
 slack_messages = transform_fd_messages_to_slack()
-
 write_output()
