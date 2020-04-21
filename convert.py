@@ -2,7 +2,6 @@ import json
 import os
 import requests
 from time import gmtime, strftime
-from zipfile import ZipFile
 import shutil
 
 flowdock_token = os.environ.get('FLOWDOCK_TOKEN')
@@ -23,46 +22,78 @@ def get_flowdock_url(rest_url):
     return r.json()
 
 def get_flowdock_users():
-    return get_flowdock_url('/organizations/%s/users' % flowdock_org)
+    # Temp file with users cached to avoid lots of requests
+    users_file = 'test/users.json'
+    return load_json_file(users_file)
+    #return get_flowdock_url('/organizations/%s/users' % flowdock_org)
 
 def load_json_file(path):
     with open(path) as f:
         return json.load(f)
 
-def build_fd_to_slack_uid_map():
-    #flowdock_users = get_flowdock_users()
-    # Temp file with users cached to avoid lots of requests
-    users_file = 'test/users.json'
-    flowdock_users = load_json_file(users_file)
-
+def build_fd_to_slack_uid_map(flowdock_users):
     slack_users = load_json_file(slack_users_file)
 
     fd_to_slack_uid_map = {} # dict where key is a flowdock uid and value is a slack uid
-    # Should probably sort both lists of users by email address
     for fd_user in flowdock_users:
         for slack_user in slack_users:
             if slack_user['profile'].get('email') == fd_user['email']:
                 fd_to_slack_uid_map[str(fd_user['id'])] = slack_user['id']
-                #slack_users.remove(slack_user)
-                #flowdock_users.remove(fd_user)
     return fd_to_slack_uid_map
 
-def transform_fd_messages_to_slack():
-    flowdock_messages = load_json_file(flowdock_messages_file)
-    slack_messages = []
+def build_fd_users_index(flowdock_users):
+    fd_users_index = {}
+    for user in flowdock_users:
+        fd_users_index[user['id']] = user
+    return fd_users_index
+
+def transform_fd_messages_to_slack(flowdock_messages):
+    thread_mapping = {} # maps Flowdock thread_id's to Slack format
+    slack_messages = [] # what we return
 
     for fm in flowdock_messages:
-        sm = {}
+        sm = {} # a single slack message
+
+        # Lookup metadata of user that sent this message
+        fd_uid = int(fm['user'])
+        fd_user = fd_users_index.get(fd_uid)
+
+        # Map all the fields
         sm['type'] = fm['event']
         sm['text'] = fm['content']
-        sm['user'] = fd_to_slack_uid_map.get(fm['user'])
+        sm['user'] = fd_to_slack_uid_map.get(fd_uid)
+
+        # Unclear if this is needed
         sm['client_msg_id'] = '' # "3c0332f2-77d5-404d-a70f-e24f08a39b97"
-        sm['ts'] = '%s.000000' % fm['sent']
-        sm['thread_ts'] = sm['ts']
+
+        # Slack messages have a timestamp followed by . and 6 digits
+        sm_ts = '%s.000000' % fm['sent'] # Unclear what the '.000000' is for
+        sm['ts'] = sm_ts
+
+        # thread_ts is the same as ts for unthreaded messages, but for threaded
+        # messages it takes the thread_ts of the first message (parent)
+        if fm['thread_id'] in thread_mapping:
+            # This is from a thread so find the Slack thread_ts for it
+            sm['thread_ts'] = thread_mapping[fm['thread_id']]
+        else:
+            # This is a single message
+            sm['thread_ts'] = sm_ts
+            # Add this to the map in case there are replies later
+            thread_mapping[fm['thread_id']] = sm_ts
+
         sm['team'] = slack_team
         sm['user_team'] = slack_team
         sm['source_team'] = slack_team
-        sm['user_profile'] = {} # Display name, avatar etc
+
+        if fd_user:
+            sm['user_profile'] = {
+                'display_name': fd_user['nick'],
+                'first_name': '',
+                'real_name': fd_user['name'],
+                'team': slack_team,
+                'is_restricted': False,
+                'is_ultra_restricted': False
+            }
         sm['blocks'] = [] # for formatting
         slack_messages.append(sm)
     return slack_messages
@@ -97,6 +128,10 @@ def write_json_file(contents, path, filename):
         json.dump(contents, f, indent=4)
  
 def write_output():
+    """
+    Writes all the messages into the Slack format and creates a zip file for
+    import into Slack.
+    """
     output_dir = output_dir_prefix + strftime('%Y-%m-%d-%H-%M-%S', gmtime())
     os.mkdir(output_dir)
 
@@ -126,6 +161,9 @@ def write_output():
         root_dir=output_dir
     )
 
-fd_to_slack_uid_map = build_fd_to_slack_uid_map()
-slack_messages = transform_fd_messages_to_slack()
+flowdock_users = get_flowdock_users()
+fd_to_slack_uid_map = build_fd_to_slack_uid_map(flowdock_users)
+fd_users_index = build_fd_users_index(flowdock_users)
+flowdock_messages = load_json_file(flowdock_messages_file)
+slack_messages = transform_fd_messages_to_slack(flowdock_messages)
 write_output()
