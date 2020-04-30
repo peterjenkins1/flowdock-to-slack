@@ -3,8 +3,13 @@ import os
 import requests
 from time import gmtime, strftime
 import shutil
+from hashlib import blake2b
+import re
+from slack import WebClient
+from slack.errors import SlackApiError
 
 flowdock_token = os.environ.get('FLOWDOCK_TOKEN')
+slack_token = os.environ.get('SLACK_API_TOKEN')
 slack_team = os.environ.get('SLACK_TEAM')
 flowdock_org = os.environ.get('FLOWDOCK_ORG')
 flowdock_url = 'https://api.flowdock.com'
@@ -26,6 +31,24 @@ def get_flowdock_users():
     users_file = 'test/users.json'
     return load_json_file(users_file)
     #return get_flowdock_url('/organizations/%s/users' % flowdock_org)
+
+def get_slack_users():
+    # Temp file with users cached
+    users_file = 'test/slack-users.json'
+    return load_json_file(users_file)
+
+    """
+    client = WebClient(token=slack_token)
+
+    try:
+        response = client.users_list()
+        return response['members']
+    except SlackApiError as e:
+        # You will get a SlackApiError if "ok" is False
+        assert e.response["ok"] is False
+        assert e.response["error"]  # str like 'invalid_auth', 'channel_not_found'
+        print(f"Got an error: {e.response['error']}")
+    """
 
 def load_json_file(path):
     with open(path) as f:
@@ -61,10 +84,12 @@ def transform_fd_messages_to_slack(flowdock_messages):
         # Map all the fields
         sm['type'] = fm['event']
         sm['text'] = fm['content']
-        sm['user'] = fd_to_slack_uid_map.get(fd_uid)
+        sm['user'] = fd_to_slack_uid_map.get(str(fd_uid))
 
-        # Unclear if this is needed
-        sm['client_msg_id'] = '' # "3c0332f2-77d5-404d-a70f-e24f08a39b97"
+        # Slack messages have some undocumented hash
+        # 3c0332f2-77d5-404d-a70f-e24f08a39b97
+        m = blake2b(str(fm).encode(), digest_size=21).hexdigest()
+        sm['client_msg_id'] = '{0}-{1}-{2}-{3}-{4}'.format(m[:8], m[9:13], m[14:18], m[19:23], m[24:36])
 
         # Slack messages have a timestamp followed by . and 6 digits
         sm_ts = '%s.000000' % fm['sent'] # Unclear what the '.000000' is for
@@ -72,6 +97,7 @@ def transform_fd_messages_to_slack(flowdock_messages):
 
         # thread_ts is the same as ts for unthreaded messages, but for threaded
         # messages it takes the thread_ts of the first message (parent)
+        # https://api.slack.com/messaging/retrieving#finding_threads
         if fm['thread_id'] in thread_mapping:
             # This is from a thread so find the Slack thread_ts for it
             sm['thread_ts'] = thread_mapping[fm['thread_id']]
@@ -89,7 +115,7 @@ def transform_fd_messages_to_slack(flowdock_messages):
             sm['user_profile'] = {
                 'display_name': fd_user['nick'],
                 'first_name': '',
-                'real_name': fd_user['name'],
+                'real_name': re.split(' - ', fd_user['name'])[0],
                 'team': slack_team,
                 'is_restricted': False,
                 'is_ultra_restricted': False
@@ -161,9 +187,12 @@ def write_output():
         root_dir=output_dir
     )
 
+slack_users = get_slack_users()
+"""
 flowdock_users = get_flowdock_users()
 fd_to_slack_uid_map = build_fd_to_slack_uid_map(flowdock_users)
 fd_users_index = build_fd_users_index(flowdock_users)
 flowdock_messages = load_json_file(flowdock_messages_file)
 slack_messages = transform_fd_messages_to_slack(flowdock_messages)
 write_output()
+"""
