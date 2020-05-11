@@ -16,8 +16,7 @@ flowdock_url = 'https://api.flowdock.com'
 output_path = 'output'
 output_dir_prefix = output_path + '/slack-export-'
 
-flowdock_messages_file = 'test/flowdock-replacement-2020-03-31/messages.json'
-slack_users_file = 'test/Smartly.io Slack export Mar 30 2020 - Mar 31 2020/users.json'
+flowdock_messages_file = 'input/exports/flowdock-replacement/messages.json'
 
 def get_flowdock_url(rest_url):
     flowdock_headers = {'Authorization': 'Basic %s' % flowdock_token}
@@ -54,7 +53,7 @@ def load_json_file(path):
     with open(path) as f:
         return json.load(f)
 
-def build_fd_to_slack_uid_map(flowdock_users):
+def build_fd_to_slack_uid_map(flowdock_users, slack_users):
     slack_users = load_json_file(slack_users_file)
 
     fd_to_slack_uid_map = {} # dict where key is a flowdock uid and value is a slack uid
@@ -64,13 +63,13 @@ def build_fd_to_slack_uid_map(flowdock_users):
                 fd_to_slack_uid_map[str(fd_user['id'])] = slack_user['id']
     return fd_to_slack_uid_map
 
-def build_fd_users_index(flowdock_users):
+def build_fd_users_index(flowdock_users, slack_users):
     fd_users_index = {}
     for user in flowdock_users:
         fd_users_index[user['id']] = user
     return fd_users_index
 
-def transform_fd_messages_to_slack(flowdock_messages):
+def transform_fd_messages_to_slack(flowdock_messages, fd_to_slack_uid_map, fd_users_index):
     thread_mapping = {} # maps Flowdock thread_id's to Slack format
     slack_messages = [] # what we return
 
@@ -153,7 +152,7 @@ def write_json_file(contents, path, filename):
     with open(path + '/' + filename, 'w') as f:
         json.dump(contents, f, indent=4)
  
-def write_output():
+def write_output(slack_messages):
     """
     Writes all the messages into the Slack format and creates a zip file for
     import into Slack.
@@ -187,12 +186,23 @@ def write_output():
         root_dir=output_dir
     )
 
-slack_users = get_slack_users()
+def main():
+    slack_users = get_slack_users()
+    flowdock_users = get_flowdock_users()
+    fd_to_slack_uid_map = build_fd_to_slack_uid_map(flowdock_users, slack_users)
+    fd_users_index = build_fd_users_index(flowdock_users, slack_users)
+    flowdock_messages = load_json_file(flowdock_messages_file)
+    slack_messages = transform_fd_messages_to_slack(flowdock_messages, fd_to_slack_uid_map, fd_users_index)
+    write_output(slack_messages)
+
+if __name__ == '__main__':
+    main()
+
 """
-flowdock_users = get_flowdock_users()
-fd_to_slack_uid_map = build_fd_to_slack_uid_map(flowdock_users)
-fd_users_index = build_fd_users_index(flowdock_users)
-flowdock_messages = load_json_file(flowdock_messages_file)
-slack_messages = transform_fd_messages_to_slack(flowdock_messages)
-write_output()
+TODO:
+ - Read in the flowdock exports from emails
+ - Download and extract the zip files
+   - unzip just messages.json to input/exports/zip-file-name
+ - Never set the user as None/null
+ - 
 """
