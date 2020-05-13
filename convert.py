@@ -7,6 +7,8 @@ from hashlib import blake2b
 import re
 from slack import WebClient
 from slack.errors import SlackApiError
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 flowdock_token = os.environ.get('FLOWDOCK_TOKEN')
 slack_token = os.environ.get('SLACK_API_TOKEN')
@@ -14,6 +16,7 @@ slack_team = os.environ.get('SLACK_TEAM')
 flowdock_org = os.environ.get('FLOWDOCK_ORG')
 flowdock_url = 'https://api.flowdock.com'
 output_path = 'output'
+cache_dir = 'cache'
 output_dir_prefix = output_path + '/slack-export-'
 
 flowdock_messages_file = 'input/exports/flowdock-replacement/messages.json'
@@ -25,37 +28,60 @@ def get_flowdock_url(rest_url):
     r.raise_for_status()
     return r.json()
 
+def get_from_cache(cache_file):
+    cache_file_rel_path = '%s/%s' % (cache_dir, cache_file)
+
+    if os.path.exists(cache_file_rel_path):
+        one_day_ago = datetime.now() - relativedelta(days=1)
+        file_time = datetime.fromtimestamp(os.path.getmtime(cache_file_rel_path))
+        if file_time > one_day_ago:
+            # Cache hit
+            return load_json_file(cache_file_rel_path)
+
+    if not os.path.exists(cache_dir):
+        os.mkdir(cache_dir)
+
+    return None
+
 def get_flowdock_users():
-    # Temp file with users cached to avoid lots of requests
-    users_file = 'test/users.json'
-    return load_json_file(users_file)
-    #return get_flowdock_url('/organizations/%s/users' % flowdock_org)
+    cache_file = 'flowdock-users.json'
+
+    flowdock_users = get_from_cache(cache_file)
+    if flowdock_users:
+        return flowdock_users
+
+    flowdock_users = get_flowdock_url('/organizations/%s/users' % flowdock_org)
+    write_json_file(flowdock_users, cache_dir, cache_file)
+    return flowdock_users
 
 def get_slack_users():
-    # Temp file with users cached
-    users_file = 'test/slack-users.json'
-    return load_json_file(users_file)
+    cache_file = 'slack-users.json'
+    
+    slack_users = get_from_cache(cache_file)
+    if slack_users:
+        return slack_users
+    
+    # Cache doesn't exist or is stale, so fetch the list from Slack
 
-    """
     client = WebClient(token=slack_token)
 
     try:
         response = client.users_list()
-        return response['members']
+        slack_users = response['members']
+        # Write list to cache
+        write_json_file(slack_users, cache_dir, cache_file)
+        return slack_users
     except SlackApiError as e:
         # You will get a SlackApiError if "ok" is False
         assert e.response["ok"] is False
         assert e.response["error"]  # str like 'invalid_auth', 'channel_not_found'
         print(f"Got an error: {e.response['error']}")
-    """
 
 def load_json_file(path):
     with open(path) as f:
         return json.load(f)
 
 def build_fd_to_slack_uid_map(flowdock_users, slack_users):
-    slack_users = load_json_file(slack_users_file)
-
     fd_to_slack_uid_map = {} # dict where key is a flowdock uid and value is a slack uid
     for fd_user in flowdock_users:
         for slack_user in slack_users:
@@ -74,19 +100,40 @@ def transform_fd_messages_to_slack(flowdock_messages, fd_to_slack_uid_map, fd_us
     slack_messages = [] # what we return
 
     for fm in flowdock_messages:
+
+        # Let's only import messages, not attachments
+        if fm['event'] != 'message':
+            print('Skipping message of type %s' % fm['event'])
+            continue
+
         sm = {} # a single slack message
 
         # Lookup metadata of user that sent this message
         fd_uid = int(fm['user'])
-        fd_user = fd_users_index.get(fd_uid)
+
+        try:
+            fd_user = fd_users_index[fd_uid]
+        except KeyError as e:
+            print('Found flowdock UID %s in the export but did not find it in the users list' % fd_uid)
+            fd_user = {
+                'nick': 'Unknown',
+                'name': 'Unknown user from Flowdock -'
+            }
+            continue
 
         # Map all the fields
         sm['type'] = fm['event']
         sm['text'] = fm['content']
-        sm['user'] = fd_to_slack_uid_map.get(str(fd_uid))
 
-        # Slack messages have some undocumented hash
+        try:
+            sm['user'] = fd_to_slack_uid_map[str(fd_uid)]
+        except KeyError as e:
+            sm['user'] = 'U010SQJ6UT0' # hubot_old in Slack
+            continue
+
+        # Slack messages have some undocumented hash like this:
         # 3c0332f2-77d5-404d-a70f-e24f08a39b97
+        # make up some random hash that looks the same!
         m = blake2b(str(fm).encode(), digest_size=21).hexdigest()
         sm['client_msg_id'] = '{0}-{1}-{2}-{3}-{4}'.format(m[:8], m[9:13], m[14:18], m[19:23], m[24:36])
 
@@ -203,6 +250,6 @@ TODO:
  - Read in the flowdock exports from emails
  - Download and extract the zip files
    - unzip just messages.json to input/exports/zip-file-name
- - Never set the user as None/null
- - 
+ - Handle attachements?!
+ - Output multiple channels?
 """
