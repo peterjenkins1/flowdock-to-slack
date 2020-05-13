@@ -81,23 +81,27 @@ def load_json_file(path):
     with open(path) as f:
         return json.load(f)
 
-def build_fd_to_slack_uid_map(flowdock_users, slack_users):
-    fd_to_slack_uid_map = {} # dict where key is a flowdock uid and value is a slack uid
+def build_fd_uid_to_slack_user_map(flowdock_users, slack_users):
+    fd_to_slack_uid_map = {} # dict where key is a flowdock uid and value is a slack user
     for fd_user in flowdock_users:
         for slack_user in slack_users:
             if slack_user['profile'].get('email') == fd_user['email']:
-                fd_to_slack_uid_map[str(fd_user['id'])] = slack_user['id']
+                fd_to_slack_uid_map[str(fd_user['id'])] = slack_user
     return fd_to_slack_uid_map
 
 def build_fd_users_index(flowdock_users, slack_users):
     fd_users_index = {}
     for user in flowdock_users:
-        fd_users_index[user['id']] = user
+        fd_users_index[str(user['id'])] = user
     return fd_users_index
 
-def transform_fd_messages_to_slack(flowdock_messages, fd_to_slack_uid_map, fd_users_index):
+def transform_fd_messages_to_slack(flowdock_messages, fd_uid_to_slack_user_map, fd_users_index):
     thread_mapping = {} # maps Flowdock thread_id's to Slack format
     slack_messages = [] # what we return
+
+    # Threads have some undocumented number after the timestamp
+    # setting this to `000000` doesn't work so let's try incrementing from 1
+    thread_counter = 200
 
     for fm in flowdock_messages:
 
@@ -106,67 +110,86 @@ def transform_fd_messages_to_slack(flowdock_messages, fd_to_slack_uid_map, fd_us
             print('Skipping message of type %s' % fm['event'])
             continue
 
-        sm = {} # a single slack message
+        sm = {} # a single slack message to add to the list
 
         # Lookup metadata of user that sent this message
-        fd_uid = int(fm['user'])
+        fd_uid = fm['user']
+        try:
+            flowdock_user = fd_users_index[fd_uid]
+        except KeyError:
+            print('Found flowdock UID %s in the export but did not find it in Flowdock users list' % fd_uid)
+            slack_user = {
+                'id': 'U010SQJ6UT0', # hubot_old in Slack
+                'name': 'unknown',
+                'profile': {
+                    'display_name': 'unknown',
+                    'image_72': ''
+                }
+            }
 
         try:
-            fd_user = fd_users_index[fd_uid]
-        except KeyError as e:
-            print('Found flowdock UID %s in the export but did not find it in the users list' % fd_uid)
-            fd_user = {
-                'nick': 'Unknown',
-                'name': 'Unknown user from Flowdock -'
+            slack_user = fd_uid_to_slack_user_map[fd_uid]
+        except KeyError:
+            print('Found flowdock UID %s in the export but did not find it in the Slack users list' % fd_uid)
+            slack_user = {
+                'id': 'U010SQJ6UT0', # hubot_old in Slack
+                'name': flowdock_user['email'].split('@')[0],
+                'profile': {
+                    'display_name': flowdock_user['nick'],
+                    'image_72': '',
+                    'avatar_hash': ''
+                }
             }
-            continue
 
         # Map all the fields
         sm['type'] = fm['event']
         sm['text'] = fm['content']
+        sm['user'] = slack_user['id']
 
-        try:
-            sm['user'] = fd_to_slack_uid_map[str(fd_uid)]
-        except KeyError as e:
-            sm['user'] = 'U010SQJ6UT0' # hubot_old in Slack
-            continue
-
-        # Slack messages have some undocumented hash like this:
+        # Slack messages have an undocumented hash like this:
         # 3c0332f2-77d5-404d-a70f-e24f08a39b97
         # make up some random hash that looks the same!
         m = blake2b(str(fm).encode(), digest_size=21).hexdigest()
         sm['client_msg_id'] = '{0}-{1}-{2}-{3}-{4}'.format(m[:8], m[9:13], m[14:18], m[19:23], m[24:36])
 
         # Slack messages have a timestamp followed by . and 6 digits
-        sm_ts = '%s.000000' % fm['sent'] # Unclear what the '.000000' is for
+        sm_ts = '%s.%06d' % (fm['sent'], thread_counter)
         sm['ts'] = sm_ts
+        thread_counter += 1
 
         # thread_ts is the same as ts for unthreaded messages, but for threaded
         # messages it takes the thread_ts of the first message (parent)
         # https://api.slack.com/messaging/retrieving#finding_threads
         if fm['thread_id'] in thread_mapping:
-            # This is from a thread so find the Slack thread_ts for it
-            sm['thread_ts'] = thread_mapping[fm['thread_id']]
+            # This is from a thread so find the parent
+            parent = thread_mapping[fm['thread_id']]
+            sm['thread_ts'] = parent['ts']
+            sm['parent_user_id'] = parent['user']
         else:
             # This is a single message
             sm['thread_ts'] = sm_ts
             # Add this to the map in case there are replies later
-            thread_mapping[fm['thread_id']] = sm_ts
+            thread_mapping[fm['thread_id']] = {
+                'ts': sm_ts,
+                'user': slack_user['id']
+            }
 
         sm['team'] = slack_team
         sm['user_team'] = slack_team
         sm['source_team'] = slack_team
 
-        if fd_user:
-            sm['user_profile'] = {
-                'display_name': fd_user['nick'],
-                'first_name': '',
-                'real_name': re.split(' - ', fd_user['name'])[0],
-                'team': slack_team,
-                'is_restricted': False,
-                'is_ultra_restricted': False
-            }
+        sm['user_profile'] = {
+            'image_72': slack_user['profile']['image_72'],
+            'avatar_hash': slack_user['profile']['avatar_hash'],
+            'display_name': flowdock_user['nick'],
+            'first_name': '',
+            'real_name': re.split(' - ', flowdock_user['name'])[0],
+            'team': slack_team,
+            'is_restricted': False,
+            'is_ultra_restricted': False
+        }
         sm['blocks'] = [] # for formatting
+
         slack_messages.append(sm)
     return slack_messages
 
@@ -199,7 +222,7 @@ def write_json_file(contents, path, filename):
     with open(path + '/' + filename, 'w') as f:
         json.dump(contents, f, indent=4)
  
-def write_output(slack_messages):
+def write_output(slack_messages, slack_users):
     """
     Writes all the messages into the Slack format and creates a zip file for
     import into Slack.
@@ -207,13 +230,7 @@ def write_output(slack_messages):
     output_dir = output_dir_prefix + strftime('%Y-%m-%d-%H-%M-%S', gmtime())
     os.mkdir(output_dir)
 
-    # copy the users.json from our test data
-    # we can get the current list from the Slack API if needed
-    shutil.copy(
-        'test/Smartly.io Slack export Mar 30 2020 - Mar 31 2020/users.json',
-        output_dir + '/users.json'
-    )
-
+    write_json_file(slack_users, output_dir, 'users.json')
     write_json_file(generate_channels_list(), output_dir, 'channels.json')
 
     # write users.json? If we use existing users this might not be needed
@@ -236,11 +253,11 @@ def write_output(slack_messages):
 def main():
     slack_users = get_slack_users()
     flowdock_users = get_flowdock_users()
-    fd_to_slack_uid_map = build_fd_to_slack_uid_map(flowdock_users, slack_users)
+    fd_uid_to_slack_user_map = build_fd_uid_to_slack_user_map(flowdock_users, slack_users)
     fd_users_index = build_fd_users_index(flowdock_users, slack_users)
     flowdock_messages = load_json_file(flowdock_messages_file)
-    slack_messages = transform_fd_messages_to_slack(flowdock_messages, fd_to_slack_uid_map, fd_users_index)
-    write_output(slack_messages)
+    slack_messages = transform_fd_messages_to_slack(flowdock_messages, fd_uid_to_slack_user_map, fd_users_index)
+    write_output(slack_messages, slack_users)
 
 if __name__ == '__main__':
     main()
@@ -252,4 +269,8 @@ TODO:
    - unzip just messages.json to input/exports/zip-file-name
  - Handle attachements?!
  - Output multiple channels?
+ - Add the avatar etc from Slack profile to each message
+ - Reaction emojis
+ - Insert Flowdock thread URL as first reply
+ - Try to fix the mis-matched users
 """
