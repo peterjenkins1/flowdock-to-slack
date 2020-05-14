@@ -84,9 +84,15 @@ def load_json_file(path):
 def build_fd_uid_to_slack_user_map(flowdock_users, slack_users):
     fd_to_slack_uid_map = {} # dict where key is a flowdock uid and value is a slack user
     for fd_user in flowdock_users:
+        fd_uid = str(fd_user['id']) # keys as strings because they are strings in the messages
         for slack_user in slack_users:
-            if slack_user['profile'].get('email') == fd_user['email']:
-                fd_to_slack_uid_map[str(fd_user['id'])] = slack_user
+            if (slack_user['profile'].get('email') == fd_user['email'] or
+                slack_user.get('real_name') == fd_user['name'].split(' - ')[0]):
+                fd_to_slack_uid_map[fd_uid] = slack_user
+                break
+        if not fd_to_slack_uid_map.get(fd_uid):
+            print('No match for %s - %s - %s' % (fd_user['email'], fd_user['nick'], fd_user['name']))
+            
     return fd_to_slack_uid_map
 
 def build_fd_users_index(flowdock_users, slack_users):
@@ -99,16 +105,13 @@ def transform_fd_messages_to_slack(flowdock_messages, fd_uid_to_slack_user_map, 
     thread_mapping = {} # maps Flowdock thread_id's to Slack format
     slack_messages = [] # what we return
 
+    no_attachements_explanation = 'This message was imported from Flowdock and the attachement was not.\n'
+
     # Threads have some undocumented number after the timestamp
     # setting this to `000000` doesn't work so let's try incrementing from 1
     thread_counter = 200
 
     for fm in flowdock_messages:
-
-        # Let's only import messages, not attachments
-        if fm['event'] != 'message':
-            print('Skipping message of type %s' % fm['event'])
-            continue
 
         sm = {} # a single slack message to add to the list
 
@@ -141,9 +144,17 @@ def transform_fd_messages_to_slack(flowdock_messages, fd_uid_to_slack_user_map, 
                 }
             }
 
-        # Map all the fields
-        sm['type'] = fm['event']
-        sm['text'] = fm['content']
+        # Map all the message fields
+
+        if fm['event'] == 'file':
+            sm['type'] = 'message'
+            sm['text'] = no_attachements_explanation + str(fm['content'])
+        elif fm['event'] == 'message':
+            sm['type'] = 'message'
+            sm['text'] = fm['content']
+        else:
+            print('Skipping message of unknown type %s' % fm['event'])
+
         sm['user'] = slack_user['id']
 
         # Slack messages have an undocumented hash like this:
