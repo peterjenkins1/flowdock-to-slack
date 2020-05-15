@@ -107,10 +107,6 @@ def transform_fd_messages_to_slack(flowdock_messages, fd_uid_to_slack_user_map, 
 
     no_attachements_explanation = 'This message was imported from Flowdock and the attachement was not.\n'
 
-    # Threads have some undocumented number after the timestamp
-    # setting this to `000000` doesn't work so let's try incrementing from 1
-    thread_counter = 200
-
     for fm in flowdock_messages:
 
         sm = {} # a single slack message to add to the list
@@ -181,9 +177,8 @@ def transform_fd_messages_to_slack(flowdock_messages, fd_uid_to_slack_user_map, 
         #sm['blocks'] = [] # for formatted messages
 
         # Slack messages have a timestamp followed by . and 6 digits
-        sm_ts = '%s.%04d00' % (fm['sent'], thread_counter)
+        sm_ts = '%d.%06d' % divmod(fm['sent'], 1e3)
         sm['ts'] = sm_ts
-        thread_counter += 1
 
         """
         Threadding: is where this gets ugly
