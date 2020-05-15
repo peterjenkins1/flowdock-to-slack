@@ -102,8 +102,8 @@ def build_fd_users_index(flowdock_users, slack_users):
     return fd_users_index
 
 def transform_fd_messages_to_slack(flowdock_messages, fd_uid_to_slack_user_map, fd_users_index):
-    thread_mapping = {} # maps Flowdock thread_id's to Slack format
-    slack_messages = [] # what we return
+    thread_mapping = {} # maps Flowdock thread_id's to Slack parent messages
+    slack_messages = [] # what we return, a list of messages ready for import
 
     no_attachements_explanation = 'This message was imported from Flowdock and the attachement was not.\n'
 
@@ -163,28 +163,6 @@ def transform_fd_messages_to_slack(flowdock_messages, fd_uid_to_slack_user_map, 
         m = blake2b(str(fm).encode(), digest_size=21).hexdigest()
         sm['client_msg_id'] = '{0}-{1}-{2}-{3}-{4}'.format(m[:8], m[9:13], m[14:18], m[19:23], m[24:36])
 
-        # Slack messages have a timestamp followed by . and 6 digits
-        sm_ts = '%s.%06d' % (fm['sent'], thread_counter)
-        sm['ts'] = sm_ts
-        thread_counter += 1
-
-        # thread_ts is the same as ts for unthreaded messages, but for threaded
-        # messages it takes the thread_ts of the first message (parent)
-        # https://api.slack.com/messaging/retrieving#finding_threads
-        if fm['thread_id'] in thread_mapping:
-            # This is from a thread so find the parent
-            parent = thread_mapping[fm['thread_id']]
-            sm['thread_ts'] = parent['ts']
-            sm['parent_user_id'] = parent['user']
-        else:
-            # This is a single message
-            sm['thread_ts'] = sm_ts
-            # Add this to the map in case there are replies later
-            thread_mapping[fm['thread_id']] = {
-                'ts': sm_ts,
-                'user': slack_user['id']
-            }
-
         sm['team'] = slack_team
         sm['user_team'] = slack_team
         sm['source_team'] = slack_team
@@ -196,10 +174,77 @@ def transform_fd_messages_to_slack(flowdock_messages, fd_uid_to_slack_user_map, 
             'first_name': '',
             'real_name': re.split(' - ', flowdock_user['name'])[0],
             'team': slack_team,
+            'name': slack_user['name'],
             'is_restricted': False,
             'is_ultra_restricted': False
         }
-        sm['blocks'] = [] # for formatting
+        #sm['blocks'] = [] # for formatted messages
+
+        # Slack messages have a timestamp followed by . and 6 digits
+        sm_ts = '%s.%04d00' % (fm['sent'], thread_counter)
+        sm['ts'] = sm_ts
+        thread_counter += 1
+
+        """
+        Threadding: is where this gets ugly
+       
+        thread_ts is the same as ts for unthreaded messages, but for threaded
+        messages it takes the thread_ts of the first message (parent)
+        https://api.slack.com/messaging/retrieving#finding_threads
+
+        Slack also needs the parent of each thread to contain a list of
+        all the replies along with other metadata. Since we are processing
+        messages seqentially we need to maintain a list of references to these 
+        parent messages so we can update them.
+
+        thread_mapping is a dict where Flowdock thread_id is the key. The value is 
+        a reference to a previous message.
+
+        """
+
+        if fm['thread_id'] in thread_mapping:
+            # This message is from a thread
+            #sm['subtype'] = 'thread_broadcast'
+
+            # We need a reference to the parent
+            parent = thread_mapping[fm['thread_id']]
+
+            # Add required keys to the current message
+            sm['thread_ts'] = parent['ts']
+            sm['parent_user_id'] = parent['user']
+
+            # Several updates to the parent message to reflect this new reply
+
+            # Parent messages need a list of replies
+            if not parent.get('reply_count'):
+                # this is the first reply
+                # add a message with the old Flowdock thread in it
+                parent['replies'] = []
+                parent['reply_users'] = []
+                parent['reply_users_count'] = 1
+
+            replies = parent['replies']
+            replies.append({
+                'user': slack_user['id'],
+                'ts': sm_ts
+            })
+            parent['reply_count'] = len(replies)
+
+            # Parent messages also have a list and count of users
+            if not slack_user['id'] in parent['reply_users']:
+                parent['reply_users'].append(slack_user['id'])
+                parent['reply_users_count'] = len(parent['reply_users'])
+
+            # some misc fields
+            parent['latest_reply'] = sm_ts
+            parent['last_read'] = sm_ts # mark all the imports as read
+            parent['subscribed'] = False
+
+        else:
+            # This is a single message
+            sm['thread_ts'] = sm_ts
+            # Add this message to the map in case there are replies later
+            thread_mapping[fm['thread_id']] = sm
 
         slack_messages.append(sm)
     return slack_messages
@@ -283,5 +328,4 @@ TODO:
  - Add the avatar etc from Slack profile to each message
  - Reaction emojis
  - Insert Flowdock thread URL as first reply
- - Try to fix the mis-matched users
 """
