@@ -18,6 +18,8 @@ flowdock_url = 'https://api.flowdock.com'
 output_path = 'output'
 cache_dir = 'cache'
 output_dir_prefix = output_path + '/slack-export-'
+export_channel_prefix = 'history-'
+import_bot_id = 'U010SQJ6UT0' # hubot_old in Slack
 
 flowdock_messages_file = 'input/exports/flowdock-replacement/messages.json'
 
@@ -101,15 +103,87 @@ def build_fd_users_index(flowdock_users, slack_users):
         fd_users_index[str(user['id'])] = user
     return fd_users_index
 
-def transform_fd_messages_to_slack(flowdock_messages, fd_uid_to_slack_user_map, fd_users_index):
-    thread_mapping = {} # maps Flowdock thread_id's to Slack parent messages
-    slack_messages = [] # what we return, a list of messages ready for import
+def generate_flowdock_thread_backlink_message(fm, flow, parent):
+    fd_thread_url = 'https://www.flowdock.com/app/{org}/{flow}/threads/{thread_id}'.format(
+        org = flowdock_org, flow = flow, thread_id = fm['thread_id']
+    )
+    m = blake2b(str(fm).encode(), digest_size=21).hexdigest()
+    msg_id = '{0}-{1}-{2}-{3}-{4}'.format(m[:8], m[9:13], m[14:18], m[19:23], m[24:36])
+    return {
+        'type': 'message',
+        'subtype': 'bot_message',
+        'text': fd_thread_url,
+        'ts': '%d.%06d' % divmod(fm['sent'], 1e3),
+        'user': import_bot_id,
+        'thread_ts': parent['ts'],
+        'parent_user_id': parent['user'],
+        'team': slack_team,
+        'user_team': slack_team,
+        'source_team': slack_team,
+        'client_msg_id': msg_id,
+        'user_profile': {
+            'image_72': '',
+            'avatar_hash': '',
+            'display_name': 'Hubot_old',
+            'first_name': '',
+            'real_name': 'Hubot old',
+            'team': slack_team,
+            'name': 'Hubot old',
+            'is_restricted': False,
+            'is_ultra_restricted': False
+        }
+    }
+
+def transform_fd_message_to_slack(fm, slack_user, flowdock_user):
+    """
+    Map the simpler fields
+    """
 
     no_attachements_explanation = 'This message was imported from Flowdock and the attachement was not.\n'
 
-    for fm in flowdock_messages:
+    # sm = slack message
+    sm = {}
+    if fm['event'] == 'file':
+        sm['type'] = 'message'
+        sm['text'] = no_attachements_explanation + str(fm['content'])
+    elif fm['event'] == 'message':
+        sm['type'] = 'message'
+        sm['text'] = fm['content']
+    else:
+        print('Skipping message of unknown type %s' % fm['event'])
 
-        sm = {} # a single slack message to add to the list
+    sm['user'] = slack_user['id']
+
+    # Slack messages have an undocumented hash like this:
+    # 3c0332f2-77d5-404d-a70f-e24f08a39b97
+    # make up some random hash that looks the same!
+    m = blake2b(str(fm).encode(), digest_size=21).hexdigest()
+    sm['client_msg_id'] = '{0}-{1}-{2}-{3}-{4}'.format(m[:8], m[9:13], m[14:18], m[19:23], m[24:36])
+
+    sm['team'] = slack_team
+    sm['user_team'] = slack_team
+    sm['source_team'] = slack_team
+
+    sm['user_profile'] = {
+        'image_72': slack_user['profile']['image_72'],
+        'avatar_hash': slack_user['profile']['avatar_hash'],
+        'display_name': flowdock_user['nick'],
+        'first_name': '',
+        'real_name': re.split(' - ', flowdock_user['name'])[0],
+        'team': slack_team,
+        'name': slack_user['name'],
+        'is_restricted': False,
+        'is_ultra_restricted': False
+    }
+    #sm['blocks'] = [] # for formatted messages
+
+    return sm
+
+def transform_fd_messages_to_slack(flowdock_messages, flow, fd_uid_to_slack_user_map, fd_users_index):
+    thread_mapping = {} # maps Flowdock thread_id's to Slack parent messages
+    slack_messages = [] # what we return, a list of messages ready for import
+
+    for fm in flowdock_messages:
 
         # Lookup metadata of user that sent this message
         fd_uid = fm['user']
@@ -118,11 +192,10 @@ def transform_fd_messages_to_slack(flowdock_messages, fd_uid_to_slack_user_map, 
         except KeyError:
             print('Found flowdock UID %s in the export but did not find it in Flowdock users list' % fd_uid)
             slack_user = {
-                'id': 'U010SQJ6UT0', # hubot_old in Slack
+                'id': import_bot_id,
                 'name': 'unknown',
                 'profile': {
                     'display_name': 'unknown',
-                    'image_72': ''
                 }
             }
 
@@ -131,7 +204,7 @@ def transform_fd_messages_to_slack(flowdock_messages, fd_uid_to_slack_user_map, 
         except KeyError:
             print('Found flowdock UID %s in the export but did not find it in the Slack users list' % fd_uid)
             slack_user = {
-                'id': 'U010SQJ6UT0', # hubot_old in Slack
+                'id': import_bot_id,
                 'name': flowdock_user['email'].split('@')[0],
                 'profile': {
                     'display_name': flowdock_user['nick'],
@@ -140,41 +213,8 @@ def transform_fd_messages_to_slack(flowdock_messages, fd_uid_to_slack_user_map, 
                 }
             }
 
-        # Map all the message fields
-
-        if fm['event'] == 'file':
-            sm['type'] = 'message'
-            sm['text'] = no_attachements_explanation + str(fm['content'])
-        elif fm['event'] == 'message':
-            sm['type'] = 'message'
-            sm['text'] = fm['content']
-        else:
-            print('Skipping message of unknown type %s' % fm['event'])
-
-        sm['user'] = slack_user['id']
-
-        # Slack messages have an undocumented hash like this:
-        # 3c0332f2-77d5-404d-a70f-e24f08a39b97
-        # make up some random hash that looks the same!
-        m = blake2b(str(fm).encode(), digest_size=21).hexdigest()
-        sm['client_msg_id'] = '{0}-{1}-{2}-{3}-{4}'.format(m[:8], m[9:13], m[14:18], m[19:23], m[24:36])
-
-        sm['team'] = slack_team
-        sm['user_team'] = slack_team
-        sm['source_team'] = slack_team
-
-        sm['user_profile'] = {
-            'image_72': slack_user['profile']['image_72'],
-            'avatar_hash': slack_user['profile']['avatar_hash'],
-            'display_name': flowdock_user['nick'],
-            'first_name': '',
-            'real_name': re.split(' - ', flowdock_user['name'])[0],
-            'team': slack_team,
-            'name': slack_user['name'],
-            'is_restricted': False,
-            'is_ultra_restricted': False
-        }
-        #sm['blocks'] = [] # for formatted messages
+        # sm is a single slack message to add to the list
+        sm = transform_fd_message_to_slack(fm, slack_user, flowdock_user)
 
         # Slack messages have a timestamp followed by . and 6 digits
         sm_ts = '%d.%06d' % divmod(fm['sent'], 1e3)
@@ -199,7 +239,6 @@ def transform_fd_messages_to_slack(flowdock_messages, fd_uid_to_slack_user_map, 
 
         if fm['thread_id'] in thread_mapping:
             # This message is from a thread
-            #sm['subtype'] = 'thread_broadcast'
 
             # We need a reference to the parent
             parent = thread_mapping[fm['thread_id']]
@@ -213,9 +252,19 @@ def transform_fd_messages_to_slack(flowdock_messages, fd_uid_to_slack_user_map, 
             # Parent messages need a list of replies
             if not parent.get('reply_count'):
                 # this is the first reply
+
                 # add a message with the old Flowdock thread in it
-                parent['replies'] = []
-                parent['reply_users'] = []
+                thread_backlink = generate_flowdock_thread_backlink_message(
+                    fm, flow, parent
+                )
+                slack_messages.append(thread_backlink)
+
+                # Initialise the thead metadata with this first reply
+                parent['replies'] = [{
+                    'user': import_bot_id,
+                    'ts': parent['ts']
+                }]
+                parent['reply_users'] = [import_bot_id]
                 parent['reply_users_count'] = 1
 
             replies = parent['replies']
@@ -244,18 +293,17 @@ def transform_fd_messages_to_slack(flowdock_messages, fd_uid_to_slack_user_map, 
         slack_messages.append(sm)
     return slack_messages
 
-def generate_channels_list():
-    return [
-        {
+def generate_channels_list(flows):
+    channels = []
+    for flow in flows:
+        channels.append({
             "id": "DEADBEEF",
-            "name": "from-flowdock",
+            "name": export_channel_prefix + flow,
             "created": 0,
             "creator": "U010F2VJ92M", # Peter Jenkins
             "is_archived": False,
             "is_general": False,
-            "members": [
-                "U010F2VJ92M" # Peter Jenkins
-            ],
+            "members": [],
             "topic": {
                 "value": "",
                 "creator": "",
@@ -266,14 +314,14 @@ def generate_channels_list():
                 "creator": "",
                 "last_set": 0
             }
-        }
-    ]
+        })
+    return channels
 
 def write_json_file(contents, path, filename):
     with open(path + '/' + filename, 'w') as f:
         json.dump(contents, f, indent=4)
  
-def write_output(slack_messages, slack_users):
+def write_output(flows, slack_users, fd_uid_to_slack_user_map, fd_users_index):
     """
     Writes all the messages into the Slack format and creates a zip file for
     import into Slack.
@@ -282,14 +330,15 @@ def write_output(slack_messages, slack_users):
     os.mkdir(output_dir)
 
     write_json_file(slack_users, output_dir, 'users.json')
-    write_json_file(generate_channels_list(), output_dir, 'channels.json')
+    write_json_file(generate_channels_list(flows), output_dir, 'channels.json')
 
-    # write users.json? If we use existing users this might not be needed
-
-    # make a directory per channel
-    channels = ['from-flowdock']
-    for channel in channels:
-        channel_dir = '%s/%s' % (output_dir, channel)
+    # Transform the messages from each flow to a Slack channel
+    for flow in flows:
+        flowdock_messages = load_json_file('input/exports/%s/messages.json' % flow)
+        slack_messages = transform_fd_messages_to_slack(flowdock_messages, flow, fd_uid_to_slack_user_map, fd_users_index)
+        
+        # make a directory per channel
+        channel_dir = '%s/%s%s' % (output_dir, export_channel_prefix, flow)
         os.mkdir(channel_dir)
         # write the messages into the channel directory
         write_json_file(slack_messages, channel_dir, 'messages.json')
@@ -301,14 +350,19 @@ def write_output(slack_messages, slack_users):
         root_dir=output_dir
     )
 
+def import_flows():
+    """
+    Should do "ls -d input/exports"
+    """
+    return ['flowdock-replacement']
+
 def main():
     slack_users = get_slack_users()
     flowdock_users = get_flowdock_users()
     fd_uid_to_slack_user_map = build_fd_uid_to_slack_user_map(flowdock_users, slack_users)
     fd_users_index = build_fd_users_index(flowdock_users, slack_users)
-    flowdock_messages = load_json_file(flowdock_messages_file)
-    slack_messages = transform_fd_messages_to_slack(flowdock_messages, fd_uid_to_slack_user_map, fd_users_index)
-    write_output(slack_messages, slack_users)
+    flows = import_flows()
+    write_output(flows, slack_users, fd_uid_to_slack_user_map, fd_users_index)
 
 if __name__ == '__main__':
     main()
