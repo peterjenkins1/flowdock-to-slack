@@ -19,7 +19,7 @@ output_path = 'output'
 cache_dir = 'cache'
 output_dir_prefix = output_path + '/slack-export-'
 export_channel_prefix = 'history-'
-import_bot_id = 'U010SQJ6UT0' # hubot_old in Slack
+import_bot_id = 'U01360Y5U9W' # Flowdock migration bot
 
 flowdock_messages_file = 'input/exports/flowdock-replacement/messages.json'
 
@@ -111,7 +111,6 @@ def generate_flowdock_thread_backlink_message(fm, flow, parent):
     msg_id = '{0}-{1}-{2}-{3}-{4}'.format(m[:8], m[9:13], m[14:18], m[19:23], m[24:36])
     return {
         'type': 'message',
-        'subtype': 'bot_message',
         'text': fd_thread_url,
         'ts': '%d.%06d' % divmod(fm['sent'], 1e3),
         'user': import_bot_id,
@@ -122,17 +121,21 @@ def generate_flowdock_thread_backlink_message(fm, flow, parent):
         'source_team': slack_team,
         'client_msg_id': msg_id,
         'user_profile': {
-            'image_72': '',
-            'avatar_hash': '',
-            'display_name': 'Hubot_old',
-            'first_name': '',
-            'real_name': 'Hubot old',
+            'image_72': 'https://avatars.slack-edge.com/2020-06-02/1171563963329_423169057c2045a4a24f_72.jpg',
+            'avatar_hash': '423169057c20',
+            'display_name': 'Flowdock',
+            'first_name': 'flowdock_migration',
+            'real_name': 'flowdock_migration',
             'team': slack_team,
-            'name': 'Hubot old',
+            'name': 'flowdock',
             'is_restricted': False,
             'is_ultra_restricted': False
         }
     }
+
+def format_slack_mention(handle):
+    # '@Foo' becomes '<@foo>'
+    return '<%s>' % handle.group(0).lower()
 
 def transform_fd_message_to_slack(fm, slack_user, flowdock_user):
     """
@@ -143,12 +146,18 @@ def transform_fd_message_to_slack(fm, slack_user, flowdock_user):
 
     # sm = slack message
     sm = {}
+
+    regex = r"(@\w+)"
+    #subst = "<\\1>"
+
+    slack_text = re.sub(regex, format_slack_mention, str(fm['content']), 0, re.MULTILINE)
+
     if fm['event'] == 'file':
         sm['type'] = 'message'
-        sm['text'] = no_attachements_explanation + str(fm['content'])
+        sm['text'] = no_attachements_explanation + slack_text
     elif fm['event'] == 'message':
         sm['type'] = 'message'
-        sm['text'] = fm['content']
+        sm['text'] = slack_text
     else:
         print('Skipping message of unknown type %s' % fm['event'])
 
