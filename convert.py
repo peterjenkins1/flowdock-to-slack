@@ -15,6 +15,7 @@ slack_token = os.environ.get('SLACK_API_TOKEN')
 slack_team = os.environ.get('SLACK_TEAM')
 flowdock_org = os.environ.get('FLOWDOCK_ORG')
 flowdock_url = 'https://api.flowdock.com'
+import_dir = 'input/exports' # Contains a directory per flow
 output_path = 'output'
 cache_dir = 'cache'
 output_dir_prefix = output_path + '/slack-export-'
@@ -137,7 +138,7 @@ def format_slack_mention(handle):
     # '@Foo' becomes '<@foo>'
     return '<%s>' % handle.group(0).lower()
 
-def transform_fd_message_to_slack(fm, slack_user, flowdock_user):
+def transform_fd_message_to_slack(fm, slack_user):
     """
     Map the simpler fields
     """
@@ -147,9 +148,8 @@ def transform_fd_message_to_slack(fm, slack_user, flowdock_user):
     # sm = slack message
     sm = {}
 
+    # turn '@Foo' into '<@foo>' for Slack to see the mentions
     regex = r"(@\w+)"
-    #subst = "<\\1>"
-
     slack_text = re.sub(regex, format_slack_mention, str(fm['content']), 0, re.MULTILINE)
 
     if fm['event'] == 'file':
@@ -158,8 +158,12 @@ def transform_fd_message_to_slack(fm, slack_user, flowdock_user):
     elif fm['event'] == 'message':
         sm['type'] = 'message'
         sm['text'] = slack_text
+    elif fm['event'] == 'comment':
+        sm['type'] = 'message'
+        sm['text'] = slack_text
     else:
         print('Skipping message of unknown type %s' % fm['event'])
+        return
 
     sm['user'] = slack_user['id']
 
@@ -176,9 +180,8 @@ def transform_fd_message_to_slack(fm, slack_user, flowdock_user):
     sm['user_profile'] = {
         'image_72': slack_user['profile']['image_72'],
         'avatar_hash': slack_user['profile']['avatar_hash'],
-        'display_name': flowdock_user['nick'],
-        'first_name': '',
-        'real_name': re.split(' - ', flowdock_user['name'])[0],
+        'display_name': slack_user['profile']['display_name'],
+        'real_name': slack_user['profile']['real_name'],
         'team': slack_team,
         'name': slack_user['name'],
         'is_restricted': False,
@@ -196,34 +199,27 @@ def transform_fd_messages_to_slack(flowdock_messages, flow, fd_uid_to_slack_user
 
         # Lookup metadata of user that sent this message
         fd_uid = fm['user']
-        try:
-            flowdock_user = fd_users_index[fd_uid]
-        except KeyError:
-            print('Found flowdock UID %s in the export but did not find it in Flowdock users list' % fd_uid)
-            slack_user = {
-                'id': import_bot_id,
-                'name': 'unknown',
-                'profile': {
-                    'display_name': 'unknown',
-                }
-            }
 
-        try:
-            slack_user = fd_uid_to_slack_user_map[fd_uid]
-        except KeyError:
-            print('Found flowdock UID %s in the export but did not find it in the Slack users list' % fd_uid)
+        flowdock_user = fd_users_index.get(fd_uid) # Can be None
+        slack_user = fd_uid_to_slack_user_map.get(fd_uid) # Can be None
+
+        if not slack_user:
             slack_user = {
                 'id': import_bot_id,
-                'name': flowdock_user['email'].split('@')[0],
+                'name': flowdock_user['email'].split('@')[0] if flowdock_user else 'unknown',
                 'profile': {
-                    'display_name': flowdock_user['nick'],
+                    'display_name': flowdock_user['nick'] if flowdock_user else 'unknown',
                     'image_72': '',
-                    'avatar_hash': ''
+                    'avatar_hash': '',
+                    'real_name': re.split(' - ', flowdock_user['name'])[0] if flowdock_user else 'unknown'
                 }
             }
 
         # sm is a single slack message to add to the list
-        sm = transform_fd_message_to_slack(fm, slack_user, flowdock_user)
+        sm = transform_fd_message_to_slack(fm, slack_user)
+        if not sm:
+            # Allow transform_fd_message_to_slack to skip messages
+            continue
 
         # Slack messages have a timestamp followed by . and 6 digits
         sm_ts = '%d.%06d' % divmod(fm['sent'], 1e3)
@@ -246,7 +242,7 @@ def transform_fd_messages_to_slack(flowdock_messages, flow, fd_uid_to_slack_user
 
         """
 
-        if fm['thread_id'] in thread_mapping:
+        if fm.get('thread_id') in thread_mapping:
             # This message is from a thread
 
             # We need a reference to the parent
@@ -296,17 +292,20 @@ def transform_fd_messages_to_slack(flowdock_messages, flow, fd_uid_to_slack_user
         else:
             # This is a single message
             sm['thread_ts'] = sm_ts
-            # Add this message to the map in case there are replies later
-            thread_mapping[fm['thread_id']] = sm
+
+            if 'thread_id' in fm:
+                # Add this message to the map in case there are replies later
+                thread_mapping[fm['thread_id']] = sm
 
         slack_messages.append(sm)
     return slack_messages
 
 def generate_channels_list(flows):
     channels = []
+    count = 0
     for flow in flows:
         channels.append({
-            "id": "DEADBEEF",
+            "id": str(count),
             "name": export_channel_prefix + flow,
             "created": 0,
             "creator": "U010F2VJ92M", # Peter Jenkins
@@ -324,6 +323,7 @@ def generate_channels_list(flows):
                 "last_set": 0
             }
         })
+        count += 1
     return channels
 
 def write_json_file(contents, path, filename):
@@ -359,18 +359,12 @@ def write_output(flows, slack_users, fd_uid_to_slack_user_map, fd_users_index):
         root_dir=output_dir
     )
 
-def import_flows():
-    """
-    Should do "ls -d input/exports"
-    """
-    return ['flowdock-replacement']
-
 def main():
     slack_users = get_slack_users()
     flowdock_users = get_flowdock_users()
     fd_uid_to_slack_user_map = build_fd_uid_to_slack_user_map(flowdock_users, slack_users)
     fd_users_index = build_fd_users_index(flowdock_users, slack_users)
-    flows = import_flows()
+    flows = os.listdir(import_dir)
     write_output(flows, slack_users, fd_uid_to_slack_user_map, fd_users_index)
 
 if __name__ == '__main__':
