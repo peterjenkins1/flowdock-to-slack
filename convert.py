@@ -150,7 +150,10 @@ def transform_fd_message_to_slack(fm, slack_user, fd_uid_to_slack_user_map):
     Map the simpler fields
     """
 
-    no_attachements_explanation = 'This message was imported from Flowdock and the attachement was not.\n'
+    no_attachements_explanation = '''
+    This message was imported from Flowdock and the attachement was not.
+
+    The original filename was: '''
 
     # sm = slack message
     sm = {}
@@ -161,7 +164,7 @@ def transform_fd_message_to_slack(fm, slack_user, fd_uid_to_slack_user_map):
 
     if fm['event'] == 'file':
         sm['type'] = 'message'
-        sm['text'] = no_attachements_explanation + slack_text
+        sm['text'] = no_attachements_explanation + fm['content']['file_name']
     elif fm['event'] == 'message':
         sm['type'] = 'message'
         sm['text'] = slack_text
