@@ -1,0 +1,16 @@
+flowdock_token:
+flowdock_org:
+flowdock_user:
+flowdock_password:
+slack_api_token:
+slack_team:
+import_bot_slack_id:
+flows:
+  - flows
+  - you
+  - want
+  - to
+  - import
+api_flows:
+# Fetched via the API
+  - others
