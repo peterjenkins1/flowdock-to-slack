@@ -374,7 +374,7 @@ def get_flow_messages(flow_name, flow_param):
 
     flowdock_headers = {'Authorization': 'Basic %s' % config['flowdock_token']}
     messages_url = '{url}/flows/{org}/{flow}/messages'.format(
-        messages_url=flowdock_url,
+        url=flowdock_url,
         org=flowdock_org,
         flow=flow_param
     )
@@ -382,10 +382,9 @@ def get_flow_messages(flow_name, flow_param):
     session.headers=flowdock_headers
 
     # Check if we can read the flow and fix if needed
-    flow_url = '{url}/flows/{org}/{flow}'.format(messages_url=flowdock_url, org=flowdock_org, flow=flow_param)
+    flow_url = '{url}/flows/{org}/{flow}'.format(url=flowdock_url, org=flowdock_org, flow=flow_param)
     r = session.get(flow_url)
     flow_metadata = r.json()
-    print(flow_metadata['open'])
     if not flow_metadata['open']:
         r = session.put(flow_url, data={'open': True})
         r.raise_for_status()
@@ -435,18 +434,16 @@ def migrate_flows_to_slack_format(slack_users, fd_uid_to_slack_user_map, fd_user
     # input/exports/*/messages.json
     # We do this because the larger exports are huge and the zip files are always unreadable
     # We can't get private flows using the API, so we need to do both :-()
+    api_flows = config['api_flows'] 
+    exported_flows = config['exported_flows']
     
-    """
-    flows_from_disk = os.listdir(import_dir)
-
     # Transform the messages from each flow to a Slack channel
-    for flow in flows:
+    for flow in exported_flows:
         try:
             flowdock_messages = load_json_file('input/exports/%s/messages.json' % flow)
         except:
             # Get the messages from Flowdock directly (cached locally)
             flowdock_messages = get_flow_messages(flow)
-    """
 
     # Flows have a name which may be different from what the backend expects
     # the client normally maps the display name ('name') to the real name 
@@ -458,7 +455,7 @@ def migrate_flows_to_slack_format(slack_users, fd_uid_to_slack_user_map, fd_user
         name_to_param_name_map[flow['name']] = flow['parameterized_name']
 
     # Filter the dict of flows_name -> flow_param to include only the ones from config.yml
-    flows = { flow_name:flow_param for (flow_name,flow_param) in name_to_param_name_map.items() if flow_name in config['api_flows'] }
+    flows = { flow_name:flow_param for (flow_name,flow_param) in name_to_param_name_map.items() if flow_name in api_flows }
 
     for flow_name, flow_param in flows.items():
 
@@ -494,5 +491,5 @@ if __name__ == '__main__':
 """
 TODO:
  - Handle attachements?!
- - Reaction emojis
+ - Reaction emojis - did this but Slack can't import it's own exports!
 """
