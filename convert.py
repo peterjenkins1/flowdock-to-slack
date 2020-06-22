@@ -441,9 +441,9 @@ def migrate_flows_to_slack_format(slack_users, fd_uid_to_slack_user_map, fd_user
     for flow in exported_flows:
         try:
             flowdock_messages = load_json_file('input/exports/%s/messages.json' % flow)
+            transform_and_write_messages(flowdock_messages, flow, flow, fd_uid_to_slack_user_map, fd_users_index, output_dir)
         except:
-            # Get the messages from Flowdock directly (cached locally)
-            flowdock_messages = get_flow_messages(flow)
+            print('Could not find downloaded messages for %s' % flow)
 
     # Flows have a name which may be different from what the backend expects
     # the client normally maps the display name ('name') to the real name 
@@ -460,13 +460,7 @@ def migrate_flows_to_slack_format(slack_users, fd_uid_to_slack_user_map, fd_user
     for flow_name, flow_param in flows.items():
 
         flowdock_messages = get_flow_messages(flow_name, flow_param)
-
-        slack_messages = transform_fd_messages_to_slack(flowdock_messages, flow_param, fd_uid_to_slack_user_map, fd_users_index)
-        # make a directory per channel
-        channel_dir = '%s/%s%s' % (output_dir, export_channel_prefix, flow_name)
-        os.mkdir(channel_dir)
-        # write the messages into the channel directory
-        write_json_file(slack_messages, channel_dir, 'messages.json')
+        transform_and_write_messages(flowdock_messages, flow_param, flow_name, fd_uid_to_slack_user_map, fd_users_index, output_dir)
 
     write_json_file(generate_channels_list(flows), output_dir, 'channels.json')
 
@@ -477,6 +471,14 @@ def migrate_flows_to_slack_format(slack_users, fd_uid_to_slack_user_map, fd_user
         root_dir=output_dir
     )
 
+def transform_and_write_messages(flowdock_messages, flow_param, flow_name, fd_uid_to_slack_user_map, fd_users_index, output_dir):
+    slack_messages = transform_fd_messages_to_slack(flowdock_messages, flow_param, fd_uid_to_slack_user_map, fd_users_index)
+    # make a directory per channel
+    channel_dir = '%s/%s%s' % (output_dir, export_channel_prefix, flow_name)
+    os.mkdir(channel_dir)
+    # write the messages into the channel directory
+    write_json_file(slack_messages, channel_dir, 'messages.json')
+
 def main():
     slack_users = get_slack_users()
     flowdock_users = get_flowdock_users()
@@ -484,12 +486,11 @@ def main():
     fd_users_index = build_fd_users_index(flowdock_users, slack_users)
     migrate_flows_to_slack_format(slack_users, fd_uid_to_slack_user_map, fd_users_index)
     
-
 if __name__ == '__main__':
     main()
 
 """
 TODO:
- - Handle attachements?!
+ - Handle attachements?
  - Reaction emojis - did this but Slack can't import it's own exports!
 """
