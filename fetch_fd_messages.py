@@ -2,10 +2,18 @@ import os
 from remotezip import RemoteZip
 import mechanicalsoup
 import re
+import yaml
 
 '''
 Download the messages.json files from the huge zip archives Flowdock provides.
 '''
+
+def load_configuration():
+    with open(config_file) as f:
+        return yaml.safe_load(f)
+
+config_file = 'config.yml'
+config = load_configuration()
 
 # First get a list of URLs from export emails
 email_dir = 'input/emails/'
@@ -14,14 +22,15 @@ fd_exports = []
 for email in emails:
 	with open(email_dir + email) as f:
 		email_content = f.read()
-		regex = r"(https://www.flowdock.com.*)\?"
-		url = re.findall(regex, email_content)[0]
+		regex = r"(https://www.flowdock.com.*)=\n(.*)=\n(.*)\?"
+		results = re.findall(regex, email_content)[0]
+		url = ''.join(results)
 		fd_exports.append(url)
 
 download_dir = 'input/exports'
 login_url = 'https://www.flowdock.com/login'
-fd_username = os.environ.get('FLOWDOCK_USER')
-fd_password = os.environ.get('FLOWDOCK_PASSWORD')
+fd_username = config['flowdock_user']
+fd_password = config['flowdock_password']
 
 # To download the zip files we need to authenticate
 browser = mechanicalsoup.StatefulBrowser()
