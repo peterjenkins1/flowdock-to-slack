@@ -11,6 +11,7 @@ from slack.errors import SlackApiError
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import time
+import textwrap
 
 def load_configuration():
     with open(config_file) as f:
@@ -42,11 +43,14 @@ def get_from_cache(cache_file):
     cache_file_rel_path = '%s/%s' % (cache_dir, cache_file)
 
     if os.path.exists(cache_file_rel_path):
+        """
         one_month_ago = datetime.now() - relativedelta(month=1)
         file_time = datetime.fromtimestamp(os.path.getmtime(cache_file_rel_path))
         if file_time > one_month_ago:
             # Cache hit
             return load_json_file(cache_file_rel_path)
+        """
+        return load_json_file(cache_file_rel_path)
 
     if not os.path.exists(cache_dir):
         os.mkdir(cache_dir)
@@ -162,6 +166,9 @@ def transform_fd_message_to_slack(fm, slack_user, fd_uid_to_slack_user_map):
     regex = r"(@+\w+)"
     slack_text = re.sub(regex, format_slack_mention, str(fm['content']), 0, re.MULTILINE)
 
+    if len(slack_text) > 4036:
+        print('.', end='', flush=True)
+
     if fm['event'] == 'file':
         sm['type'] = 'message'
         sm['text'] = no_attachements_explanation + fm['content']['file_name']
@@ -248,6 +255,14 @@ def transform_fd_messages_to_slack(flowdock_messages, flow, fd_uid_to_slack_user
             # Allow transform_fd_message_to_slack to skip messages
             continue
 
+        # Messages get truncated around 4000 characters. We make it a bit shorter
+        # so we can add an explation for the user.
+        slack_message_max_length = 3900
+        multipart_message_list = []
+        if len(sm['text']) > slack_message_max_length:
+            # We have a long message, we need to split the text into several parts
+            multipart_message_list = textwrap.wrap(sm['text'], width=slack_message_max_length, replace_whitespace=False)
+
         # Slack messages have a timestamp followed by . and 6 digits
         sm_ts = '%d.%06d' % divmod(fm['sent'], 1e3)
         sm['ts'] = sm_ts
@@ -269,15 +284,40 @@ def transform_fd_messages_to_slack(flowdock_messages, flow, fd_uid_to_slack_user
 
         """
 
-        if fm.get('thread_id') in thread_mapping:
-            # This message is from a thread
+        # This message might be part of an existing thread. We try to find the parent
+        parent = thread_mapping.get(fm.get('thread_id'))
 
-            # We need a reference to the parent
-            parent = thread_mapping[fm['thread_id']]
+        if not parent and not multipart_message_list:
+            # This is a single message which is not too long
+            sm['thread_ts'] = sm_ts
 
-            # Add required keys to the current message
+            if 'thread_id' in fm:
+                # Add this message to the map in case there are replies later
+                thread_mapping[fm['thread_id']] = sm
+
+            #slack_messages.append(sm)
+
+        if parent or multipart_message_list:
+            # This message is from a thread and/or this message is so long we need
+            # to make it a thread to group all the parts
+
+            # If this is long message and first in the thread set the parent to the
+            # current message
+            if not parent:
+                parent = sm
+                # Add this message to the map in case there are replies later
+                if fm.get('thread_id'):
+                    thread_mapping[fm['thread_id']] = sm
+
+            # Add keys to the current message to make it a thread
             sm['thread_ts'] = parent['ts']
             sm['parent_user_id'] = parent['user']
+
+            if multipart_message_list:
+                # Copy sm so we can reuse it for the multi-part messages
+                sm_copy = sm.copy()
+            else:
+                sm_copy = None
 
             # Several updates to the parent message to reflect this new reply
 
@@ -285,11 +325,13 @@ def transform_fd_messages_to_slack(flowdock_messages, flow, fd_uid_to_slack_user
             if not parent.get('reply_count'):
                 # this is the first reply
 
+                """
                 # add a message with the old Flowdock thread in it
                 thread_backlink = generate_flowdock_thread_backlink_message(
                     fm, flow, parent
                 )
                 slack_messages.append(thread_backlink)
+                """
 
                 # Initialise the thead metadata with this first reply
                 parent['replies'] = [{
@@ -306,25 +348,53 @@ def transform_fd_messages_to_slack(flowdock_messages, flow, fd_uid_to_slack_user
             })
             parent['reply_count'] = len(replies)
 
+            # We want to mark threads as read so we need to track the last/final
+            # timestamp. Initialise it to the current one.
+            last_ts = sm_ts
+
+            # Append the current message to the list before we handle
+            # multi-part messages and update the parent
+            if not multipart_message_list:
+                #slack_messages.append(sm)
+                pass
+            else:
+
+                # Handle long multi-part messages
+                for count, text_part in enumerate(multipart_message_list[1:]):
+                    # Use a copy of the current message before we added all the thread crap to it
+                    part = sm_copy.copy() if sm_copy else sm.copy()
+                    # Increment the timestamp to add these messages to the thread after
+                    # the first one. Each message is one second? appart
+                    part_ts = sm['ts'].split('.')
+                    part_ts[0] = int(part_ts[0]) + count + 1
+                    part_ts[1] = int(part_ts[1]) + count + 1
+                    last_ts = '%d.%06d' % tuple(part_ts)
+                    part['ts'] = last_ts
+                    if count == -1:
+                        part['text'] = text_part
+                    else:
+                        part['text'] = '*Flowdock imported message continues ...*\n' + text_part
+                    # append a message for each part
+                    slack_messages.append(part)
+                    # update the parent
+                    replies = parent['replies']
+                    replies.append({
+                        'user': slack_user['id'],
+                        'ts': last_ts
+                    })
+                    parent['reply_count'] = len(replies)
+
             # Parent messages also have a list and count of users
+            # We only need to update this once for multi-part messages
             if not slack_user['id'] in parent['reply_users']:
                 parent['reply_users'].append(slack_user['id'])
                 parent['reply_users_count'] = len(parent['reply_users'])
 
             # some misc fields
-            parent['latest_reply'] = sm_ts
-            parent['last_read'] = sm_ts # mark all the imports as read
+            parent['latest_reply'] = last_ts
+            parent['last_read'] = last_ts # mark all the imports as read
             parent['subscribed'] = False
 
-        else:
-            # This is a single message
-            sm['thread_ts'] = sm_ts
-
-            if 'thread_id' in fm:
-                # Add this message to the map in case there are replies later
-                thread_mapping[fm['thread_id']] = sm
-
-        slack_messages.append(sm)
     return slack_messages
 
 def generate_channels_list(flows):
@@ -366,6 +436,7 @@ def get_flow_messages(flow_name, flow_param):
     messages = get_from_cache(cache_file)
 
     if messages:
+        print('Found cached messages for %s AKA %s' % (flow_name, flow_param))
         return messages
 
     print('Downloading messages from %s AKA %s' % (flow_name, flow_param))
