@@ -43,13 +43,11 @@ def get_from_cache(cache_file):
     cache_file_rel_path = '%s/%s' % (cache_dir, cache_file)
 
     if os.path.exists(cache_file_rel_path):
-        """
         one_month_ago = datetime.now() - relativedelta(month=1)
         file_time = datetime.fromtimestamp(os.path.getmtime(cache_file_rel_path))
         if file_time > one_month_ago:
             # Cache hit
             return load_json_file(cache_file_rel_path)
-        """
         return load_json_file(cache_file_rel_path)
 
     if not os.path.exists(cache_dir):
@@ -165,9 +163,6 @@ def transform_fd_message_to_slack(fm, slack_user, fd_uid_to_slack_user_map):
     # turn '@Foo' into '<@foo>' for Slack to see the mentions
     regex = r"(@+\w+)"
     slack_text = re.sub(regex, format_slack_mention, str(fm['content']), 0, re.MULTILINE)
-
-    if len(slack_text) > 4036:
-        print('.', end='', flush=True)
 
     if fm['event'] == 'file':
         sm['type'] = 'message'
@@ -295,7 +290,7 @@ def transform_fd_messages_to_slack(flowdock_messages, flow, fd_uid_to_slack_user
                 # Add this message to the map in case there are replies later
                 thread_mapping[fm['thread_id']] = sm
 
-            #slack_messages.append(sm)
+            slack_messages.append(sm)
 
         if parent or multipart_message_list:
             # This message is from a thread and/or this message is so long we need
@@ -325,13 +320,13 @@ def transform_fd_messages_to_slack(flowdock_messages, flow, fd_uid_to_slack_user
             if not parent.get('reply_count'):
                 # this is the first reply
 
-                """
                 # add a message with the old Flowdock thread in it
-                thread_backlink = generate_flowdock_thread_backlink_message(
-                    fm, flow, parent
-                )
-                slack_messages.append(thread_backlink)
-                """
+                # Some very old messages might not have a thread_id
+                if fm.get('thread_id'):
+                    thread_backlink = generate_flowdock_thread_backlink_message(
+                        fm, flow, parent
+                    )
+                    slack_messages.append(thread_backlink)
 
                 # Initialise the thead metadata with this first reply
                 parent['replies'] = [{
@@ -355,12 +350,12 @@ def transform_fd_messages_to_slack(flowdock_messages, flow, fd_uid_to_slack_user
             # Append the current message to the list before we handle
             # multi-part messages and update the parent
             if not multipart_message_list:
-                #slack_messages.append(sm)
+                slack_messages.append(sm)
                 pass
             else:
 
                 # Handle long multi-part messages
-                for count, text_part in enumerate(multipart_message_list[1:]):
+                for count, text_part in enumerate(multipart_message_list):
                     # Use a copy of the current message before we added all the thread crap to it
                     part = sm_copy.copy() if sm_copy else sm.copy()
                     # Increment the timestamp to add these messages to the thread after
@@ -370,7 +365,7 @@ def transform_fd_messages_to_slack(flowdock_messages, flow, fd_uid_to_slack_user
                     part_ts[1] = int(part_ts[1]) + count + 1
                     last_ts = '%d.%06d' % tuple(part_ts)
                     part['ts'] = last_ts
-                    if count == -1:
+                    if count == 0:
                         part['text'] = text_part
                     else:
                         part['text'] = '*Flowdock imported message continues ...*\n' + text_part
@@ -410,12 +405,12 @@ def generate_channels_list(flows):
             "is_general": False,
             "members": [],
             "topic": {
-                "value": "Fomer %s Flow from Flowdock" % flow_name,
+                "value": "Former %s Flow from Flowdock" % flow_name,
                 "creator": "",
                 "last_set": 0
             },
             "purpose": {
-                "value": "Fomer %s Flow from Flowdock. This is now a read-only archive." % flow_name,
+                "value": "Former %s Flow from Flowdock. This is now a read-only archive." % flow_name,
                 "creator": "",
                 "last_set": 0
             }
